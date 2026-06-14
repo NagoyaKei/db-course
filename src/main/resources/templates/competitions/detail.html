@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Соревнование</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3" th:text="${competition.name}"></h1>
+      <p class="text-muted mb-0"
+         th:text="${#temporals.format(competition.competitionDate, 'dd.MM.yyyy')} + ', ' + ${competition.location}"></p>
+    </div>
+    <a th:href="@{/competitions/{id}/edit(id=${competition.competitionId})}"
+       class="btn btn-outline-secondary">
+      <i class="bi bi-pencil me-1"></i> Редактировать
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent fw-medium">
+      Протокол результатов (<span th:text="${#lists.size(results)}"></span>)
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Спортсмен</th>
+          <th>Дистанция (м)</th>
+          <th>Стиль</th>
+          <th>Ветер</th>
+          <th>Попытка</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r, stat : ${results}">
+          <td th:text="${stat.index + 1}"></td>
+          <td>
+            <a th:href="@{/athletes/{id}(id=${r.athleteId})}"
+               th:text="${r.athleteFullName}" class="text-decoration-none"></a>
+          </td>
+          <td class="fw-medium" th:text="${r.distanceM}"></td>
+          <td th:text="${r.stylePoints}"></td>
+          <td th:text="${r.windFactor}"></td>
+          <td th:text="${r.attemptNumber}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(results)}">
+          <td colspan="6" class="text-center text-muted py-4">Результаты не зарегистрированы</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <a th:href="@{/competitions}" class="btn btn-link text-decoration-none px-0">
+      <i class="bi bi-arrow-left me-1"></i> Назад к списку
+    </a>
+  </div>
+
+</div>
+</body>
+</html>

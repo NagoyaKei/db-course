@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Тренер</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3" th:text="${coach.personId == null} ? 'Новый тренер' : 'Редактирование'"></h1>
+  </div>
+
+  <div class="card border-0 shadow-sm" style="max-width: 580px;">
+    <div class="card-body">
+      <form th:action="${coach.personId == null} ? @{/coaches} : @{/coaches/{id}/edit(id=${coach.personId})}"
+            th:object="${coach}" method="post">
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Фамилия <span class="text-danger">*</span></label>
+            <input th:field="*{lastName}" type="text" class="form-control"
+                   th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{lastName}"></div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Имя <span class="text-danger">*</span></label>
+            <input th:field="*{firstName}" type="text" class="form-control"
+                   th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{firstName}"></div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Отчество</label>
+            <input th:field="*{middleName}" type="text" class="form-control">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Дата рождения <span class="text-danger">*</span></label>
+            <input th:field="*{birthDate}" type="date" class="form-control"
+                   th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{birthDate}"></div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Пол <span class="text-danger">*</span></label>
+            <select th:field="*{gender}" class="form-select">
+              <option value="M">Мужской</option>
+              <option value="F">Женский</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Контакт</label>
+            <input th:field="*{contactInfo}" type="text" class="form-control">
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label">Номер лицензии <span class="text-danger">*</span></label>
+            <input th:field="*{licenseNumber}" type="text" class="form-control"
+                   placeholder="LIC-2025-001"
+                   th:classappend="${#fields.hasErrors('licenseNumber')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{licenseNumber}"></div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Стаж (лет)</label>
+            <input th:field="*{experienceYears}" type="number"
+                   class="form-control" min="0" max="50">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Специализация <span class="text-danger">*</span></label>
+            <input th:field="*{specialization}" type="text" class="form-control"
+                   th:classappend="${#fields.hasErrors('specialization')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{specialization}"></div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i> Сохранить
+          </button>
+          <a th:href="@{/coaches}" class="btn btn-outline-secondary">Отмена</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

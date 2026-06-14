@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="ru">
+<head><title>Главная</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3">Панель управления</h1>
+    <p class="text-muted mb-0">Система учета клуба «Летающий лыжник»</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="fs-1 text-primary"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="fs-2 fw-bold" th:text="${athleteCount}">0</div>
+            <div class="text-muted small">Спортсменов</div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a th:href="@{/athletes}" class="btn btn-sm btn-outline-primary w-100">Открыть</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="fs-1 text-success"><i class="bi bi-person-badge"></i></div>
+          <div>
+            <div class="fs-2 fw-bold" th:text="${coachCount}">0</div>
+            <div class="text-muted small">Тренеров</div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a th:href="@{/coaches}" class="btn btn-sm btn-outline-success w-100">Открыть</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="fs-1 text-warning"><i class="bi bi-trophy"></i></div>
+          <div>
+            <div class="fs-2 fw-bold" th:text="${competitionCount}">0</div>
+            <div class="text-muted small">Соревнований</div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a th:href="@{/competitions}" class="btn btn-sm btn-outline-warning w-100">Открыть</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="fs-1 text-danger"><i class="bi bi-graph-up"></i></div>
+          <div>
+            <div class="fs-2 fw-bold" th:text="${jumpCount}">0</div>
+            <div class="text-muted small">Прыжков</div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+          <a th:href="@{/jumps}" class="btn btn-sm btn-outline-danger w-100">Открыть</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

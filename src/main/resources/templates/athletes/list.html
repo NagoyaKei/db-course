@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Спортсмены</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3">Спортсмены</h1>
+      <p class="text-muted mb-0">Реестр спортсменов клуба</p>
+    </div>
+    <a th:href="@{/athletes/new}" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i> Добавить
+    </a>
+  </div>
+
+  <!-- Фильтр по статусу -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-2">
+      <form method="get" class="d-flex gap-2 align-items-center">
+        <label class="text-muted small mb-0">Статус:</label>
+        <select name="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+          <option value="" th:selected="${selectedStatus == null}">Все</option>
+          <option value="ACTIVE"    th:selected="${selectedStatus == 'ACTIVE'}">Активен</option>
+          <option value="INACTIVE"  th:selected="${selectedStatus == 'INACTIVE'}">Неактивен</option>
+          <option value="SUSPENDED" th:selected="${selectedStatus == 'SUSPENDED'}">Дисквалифицирован</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+        <tr>
+          <th>Спортсмен</th>
+          <th>Номер</th>
+          <th>Тренер</th>
+          <th>Разряд</th>
+          <th>Статус</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${athletes}">
+          <td>
+            <a th:href="@{/athletes/{id}(id=${a.personId})}"
+               th:text="${a.fullName}" class="text-decoration-none fw-medium"></a>
+            <div class="text-muted small"
+                 th:text="${#temporals.format(a.birthDate, 'dd.MM.yyyy')}"></div>
+          </td>
+          <td><code th:text="${a.athleteNumber}"></code></td>
+          <td th:text="${a.coachFullName}"></td>
+          <td>
+                        <span th:if="${a.rankName}" th:text="${a.rankName}"
+                              class="badge bg-info text-dark"></span>
+            <span th:unless="${a.rankName}" class="text-muted small">-</span>
+          </td>
+          <td>
+                        <span th:switch="${a.currentStatus}">
+                            <span th:case="'ACTIVE'"    class="badge bg-success">Активен</span>
+                            <span th:case="'INACTIVE'"  class="badge bg-secondary">Неактивен</span>
+                            <span th:case="'SUSPENDED'" class="badge bg-danger">Дисквалифицирован</span>
+                        </span>
+          </td>
+          <td class="text-end">
+            <a th:href="@{/athletes/{id}/edit(id=${a.personId})}"
+               class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(athletes)}">
+          <td colspan="6" class="text-center text-muted py-4">Спортсмены не найдены</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

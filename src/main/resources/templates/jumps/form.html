@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Новый прыжок</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3">Регистрация результата прыжка</h1>
+  </div>
+
+  <div class="card border-0 shadow-sm" style="max-width: 520px;">
+    <div class="card-body">
+      <form th:action="@{/jumps}" th:object="${jump}" method="post">
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Спортсмен <span class="text-danger">*</span></label>
+            <select th:field="*{athleteId}" class="form-select"
+                    th:classappend="${#fields.hasErrors('athleteId')} ? 'is-invalid'">
+              <option value="">- выберите -</option>
+              <option th:each="a : ${athletes}"
+                      th:value="${a.athleteId}"
+                      th:text="${a.fullName}"></option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{athleteId}"></div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Соревнование <span class="text-danger">*</span></label>
+            <select th:field="*{competitionId}" class="form-select"
+                    th:classappend="${#fields.hasErrors('competitionId')} ? 'is-invalid'">
+              <option value="">- выберите -</option>
+              <option th:each="c : ${competitions}"
+                      th:value="${c.competitionId}"
+                      th:text="${c.name} + ' (' + ${#temporals.format(c.competitionDate,'dd.MM.yyyy')} + ')'"></option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{competitionId}"></div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Дистанция (м) <span class="text-danger">*</span></label>
+            <input th:field="*{distanceM}" type="number" step="0.01"
+                   class="form-control" min="0" max="300"
+                   th:classappend="${#fields.hasErrors('distanceM')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{distanceM}"></div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Попытка</label>
+            <select th:field="*{attemptNumber}" class="form-select">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Баллы за стиль</label>
+            <input th:field="*{stylePoints}" type="number" step="0.1"
+                   class="form-control" min="0" max="20">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Поправка на ветер</label>
+            <input th:field="*{windFactor}" type="number" step="0.01"
+                   class="form-control" min="-5" max="5">
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i> Сохранить
+          </button>
+          <a th:href="@{/jumps}" class="btn btn-outline-secondary">Отмена</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
