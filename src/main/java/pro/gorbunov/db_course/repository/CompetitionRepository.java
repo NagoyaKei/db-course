@@ -21,10 +21,10 @@ public class CompetitionRepository {
 
     private final RowMapper<Competition> rowMapper = (rs, rowNum) -> {
         Competition c = new Competition();
-        c.setId(rs.getLong("competition_id"));
+        c.setId(rs.getLong("id"));
         c.setName(rs.getString("name"));
         c.setLocation(rs.getString("location"));
-        c.setCompetitionDate(rs.getDate("comp_date").toLocalDate());
+        c.setCompetitionDate(rs.getDate("competition_date").toLocalDate());
         c.setHillSize(rs.getString("hill_size"));
         c.setLevel(rs.getString("level"));
         c.setMaxParticipants(rs.getInt("max_participants"));
@@ -35,21 +35,21 @@ public class CompetitionRepository {
 
     private static final String BASE_SELECT = """
             SELECT
-                c.competition_id, c.name, c.location, c.comp_date,
+                c.id, c.name, c.location, c.competition_date,
                 c.hill_size, c.level, c.max_participants, c.status,
                 COUNT(DISTINCT jr.athlete_id) AS participants_count
             FROM competition c
-            LEFT JOIN jump_result jr ON jr.competition_id = c.competition_id
-            GROUP BY c.competition_id, c.comp_date
+            LEFT JOIN jump_result jr ON jr.competition_id = c.id
+            GROUP BY c.id, c.competition_date
             """;
 
     public List<Competition> findAll() {
-        return jdbc.query(BASE_SELECT + "ORDER BY c.comp_date DESC", rowMapper);
+        return jdbc.query(BASE_SELECT + "ORDER BY c.competition_date DESC", rowMapper);
     }
 
     public Optional<Competition> findById(Long id) {
         return jdbc.query(
-                BASE_SELECT + "HAVING c.competition_id = ?",
+                BASE_SELECT + "HAVING c.id = ?",
                 rowMapper, id
         ).stream().findFirst();
     }
@@ -60,7 +60,7 @@ public class CompetitionRepository {
         jdbc.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     """
-                    INSERT INTO competition (name, location, comp_date, hill_size, level, max_participants, status)
+                    INSERT INTO competition (name, location, competition_date, hill_size, level, max_participants, status)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
                     Statement.RETURN_GENERATED_KEYS
@@ -82,9 +82,9 @@ public class CompetitionRepository {
         jdbc.update(
                 """
                 UPDATE competition SET
-                    name = ?, location = ?, comp_date = ?,
+                    name = ?, location = ?, competition_date = ?,
                     hill_size = ?, level = ?, max_participants = ?, status = ?
-                WHERE competition_id = ?
+                WHERE id = ?
                 """,
                 competition.getName(), competition.getLocation(),
                 java.sql.Date.valueOf(competition.getCompetitionDate()),
@@ -95,7 +95,7 @@ public class CompetitionRepository {
     }
 
     public void delete(Long id) {
-        jdbc.update("DELETE FROM competition WHERE competition_id = ?", id);
+        jdbc.update("DELETE FROM competition WHERE id = ?", id);
     }
 
     public int count() {

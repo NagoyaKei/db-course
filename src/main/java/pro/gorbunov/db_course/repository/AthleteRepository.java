@@ -33,6 +33,7 @@ public class AthleteRepository {
         a.setAthleteNumber(rs.getString("athlete_number"));
         a.setStartYear(rs.getInt("start_year"));
         a.setCurrentStatus(rs.getString("current_status"));
+        a.setCoachFullName(rs.getString("coach_full_name"));
         return a;
     };
 
@@ -53,9 +54,8 @@ public class AthleteRepository {
     }
 
     public Optional<Athlete> findById(Long id) {
-        Optional<Athlete> optionalAthlete = jdbc.query(BASE_SELECT + "WHERE a.person_id = ?", rowMapper, id)
+        return jdbc.query(BASE_SELECT + "WHERE a.person_id = ?", rowMapper, id)
                 .stream().findFirst();
-        return optionalAthlete;
     }
 
     public List<Athlete> findByStatus(String status) {

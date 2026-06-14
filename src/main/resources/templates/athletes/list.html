@@ -39,7 +39,7 @@
           <th>Спортсмен</th>
           <th>Номер</th>
           <th>Тренер</th>
-          <th>Разряд</th>
+<!--          <th>Разряд</th>-->
           <th>Статус</th>
           <th></th>
         </tr>
@@ -54,11 +54,11 @@
           </td>
           <td><code th:text="${a.athleteNumber}"></code></td>
           <td th:text="${a.coachFullName}"></td>
-          <td>
-                        <span th:if="${a.rankName}" th:text="${a.rankName}"
-                              class="badge bg-info text-dark"></span>
-            <span th:unless="${a.rankName}" class="text-muted small">-</span>
-          </td>
+<!--          <td>-->
+<!--                        <span th:if="${a.rankName}" th:text="${a.rankName}"-->
+<!--                              class="badge bg-info text-dark"></span>-->
+<!--            <span th:unless="${a.rankName}" class="text-muted small">-</span>-->
+<!--          </td>-->
           <td>
                         <span th:switch="${a.currentStatus}">
                             <span th:case="'ACTIVE'"    class="badge bg-success">Активен</span>

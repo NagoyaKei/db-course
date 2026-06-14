@@ -33,7 +33,7 @@
         <tbody>
         <tr th:each="j : ${jumps}">
           <td>
-            <a th:href="@{/athletes/{id}(id=${j.personId})}"
+            <a th:href="@{/athletes/{id}(id=${j.athleteId})}"
                th:text="${j.athleteFullName}" class="text-decoration-none"></a>
           </td>
           <td>

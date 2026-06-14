@@ -32,7 +32,7 @@
         <tbody>
         <tr th:each="c : ${competitions}">
           <td>
-            <a th:href="@{/competitions/{id}(id=${c.competitionId})}"
+            <a th:href="@{/competitions/{id}(id=${c.id})}"
                th:text="${c.name}" class="text-decoration-none fw-medium"></a>
           </td>
           <td th:text="${#temporals.format(c.competitionDate, 'dd.MM.yyyy')}"></td>
@@ -47,11 +47,11 @@
           </td>
           <td th:text="${c.participantsCount} + ' / ' + ${c.maxParticipants}"></td>
           <td class="text-end d-flex gap-1 justify-content-end">
-            <a th:href="@{/competitions/{id}/edit(id=${c.competitionId})}"
+            <a th:href="@{/competitions/{id}/edit(id=${c.id})}"
                class="btn btn-sm btn-outline-secondary">
               <i class="bi bi-pencil"></i>
             </a>
-            <form th:action="@{/competitions/{id}/delete(id=${c.competitionId})}" method="post">
+            <form th:action="@{/competitions/{id}/delete(id=${c.id})}" method="post">
               <button class="btn btn-sm btn-outline-danger"
                       onclick="return confirm('Удалить соревнование?')">
                 <i class="bi bi-trash"></i>

@@ -12,7 +12,7 @@
       <p class="text-muted mb-0"
          th:text="${#temporals.format(competition.competitionDate, 'dd.MM.yyyy')} + ', ' + ${competition.location}"></p>
     </div>
-    <a th:href="@{/competitions/{id}/edit(id=${competition.competitionId})}"
+    <a th:href="@{/competitions/{id}/edit(id=${competition.id})}"
        class="btn btn-outline-secondary">
       <i class="bi bi-pencil me-1"></i> Редактировать
     </a>
@@ -41,7 +41,7 @@
             <a th:href="@{/athletes/{id}(id=${r.athleteId})}"
                th:text="${r.athleteFullName}" class="text-decoration-none"></a>
           </td>
-          <td class="fw-medium" th:text="${r.distanceM}"></td>
+          <td class="fw-medium" th:text="${r.distance}"></td>
           <td th:text="${r.stylePoints}"></td>
           <td th:text="${r.windFactor}"></td>
           <td th:text="${r.attemptNumber}"></td>

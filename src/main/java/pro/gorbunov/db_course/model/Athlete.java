@@ -27,4 +27,8 @@ public class Athlete extends Person {
     @NotBlank
     @Pattern(regexp = "^(ACTIVE|INACTIVE|SUSPENDED)$")
     private String currentStatus;
+
+    /* дополнительные поля для view */
+    private String coachFullName;
+    private String rankName;
 }

@@ -32,6 +32,9 @@ public class JumpResultRepository {
         j.setGateMark(rs.getString("gate_mark"));
         Timestamp ts = rs.getTimestamp("jump_timestamp");
         j.setJumpTimestamp(ts != null ? ts.toLocalDateTime() : null);
+        j.setAttemptNumber(rs.getInt("attempt_number"));
+        j.setAthleteFullName(rs.getString("athlete_full_name"));
+        j.setCompetitionName(rs.getString("competition_name"));
         return j;
     };
 
@@ -39,11 +42,13 @@ public class JumpResultRepository {
             SELECT
                 jr.jump_id, jr.athlete_id, jr.competition_id,
                 jr.distance, jr.style_points, jr.wind_factor,
-                jr.gate_mark, jr.jump_timestamp
+                jr.gate_mark, jr.jump_timestamp, jr.attempt_number,
+                p.last_name || ' ' || p.first_name as athlete_full_name,
+                c.name as competition_name
             FROM jump_result jr
             JOIN athlete a    ON a.person_id = jr.athlete_id
             JOIN person p     ON p.person_id = a.person_id
-            JOIN competition c ON c.competition_id  = jr.competition_id
+            JOIN competition c ON c.id  = jr.competition_id
             """;
 
     public List<JumpResult> findAll() {

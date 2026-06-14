@@ -38,4 +38,8 @@ public class JumpResult {
     private Integer attemptNumber;
 
     private String gateMark;
+
+    /* additional fields for view */
+    private String athleteFullName;
+    private String competitionName;
 }
