@@ -21,7 +21,7 @@
                     th:classappend="${#fields.hasErrors('athleteId')} ? 'is-invalid'">
               <option value="">- выберите -</option>
               <option th:each="a : ${athletes}"
-                      th:value="${a.athleteId}"
+                      th:value="${a.personId}"
                       th:text="${a.fullName}"></option>
             </select>
             <div class="invalid-feedback" th:errors="*{athleteId}"></div>
@@ -32,17 +32,17 @@
                     th:classappend="${#fields.hasErrors('competitionId')} ? 'is-invalid'">
               <option value="">- выберите -</option>
               <option th:each="c : ${competitions}"
-                      th:value="${c.competitionId}"
+                      th:value="${c.id}"
                       th:text="${c.name} + ' (' + ${#temporals.format(c.competitionDate,'dd.MM.yyyy')} + ')'"></option>
             </select>
             <div class="invalid-feedback" th:errors="*{competitionId}"></div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Дистанция (м) <span class="text-danger">*</span></label>
-            <input th:field="*{distanceM}" type="number" step="0.01"
+            <input th:field="*{distance}" type="number" step="0.01"
                    class="form-control" min="0" max="300"
-                   th:classappend="${#fields.hasErrors('distanceM')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{distanceM}"></div>
+                   th:classappend="${#fields.hasErrors('distance')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{distance}"></div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Попытка</label>
@@ -55,7 +55,7 @@
           <div class="col-md-6">
             <label class="form-label">Баллы за стиль</label>
             <input th:field="*{stylePoints}" type="number" step="0.1"
-                   class="form-control" min="0" max="20">
+                   class="form-control" min="0" max="60">
           </div>
           <div class="col-md-6">
             <label class="form-label">Поправка на ветер</label>

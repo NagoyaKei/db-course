@@ -8,10 +8,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pro.gorbunov.db_course.model.Coach;
 import pro.gorbunov.db_course.repository.AthleteRepository;
+import pro.gorbunov.db_course.model.StoredImage;
 import pro.gorbunov.db_course.repository.CoachRepository;
+import pro.gorbunov.db_course.repository.PersonImageRepository;
+import pro.gorbunov.db_course.service.ImageUploadReader;
+import pro.gorbunov.db_course.service.PersonPhotoService;
 
 import javax.validation.Valid;
 
@@ -21,11 +27,20 @@ public class CoachController {
 
     private final CoachRepository coachRepository;
     private final AthleteRepository athleteRepository;
+    private final PersonImageRepository personImageRepository;
+    private final ImageUploadReader imageUploadReader;
+    private final PersonPhotoService personPhotoService;
 
     public CoachController(CoachRepository coachRepository,
-                           AthleteRepository athleteRepository) {
+                           AthleteRepository athleteRepository,
+                           PersonImageRepository personImageRepository,
+                           ImageUploadReader imageUploadReader,
+                           PersonPhotoService personPhotoService) {
         this.coachRepository = coachRepository;
         this.athleteRepository = athleteRepository;
+        this.personImageRepository = personImageRepository;
+        this.imageUploadReader = imageUploadReader;
+        this.personPhotoService = personPhotoService;
     }
 
     @GetMapping
@@ -51,9 +66,12 @@ public class CoachController {
     @PostMapping
     public String create(@Valid @ModelAttribute Coach coach,
                          BindingResult errors,
+                         @RequestParam(required = false) MultipartFile photo,
                          RedirectAttributes redirect) {
+        StoredImage storedPhoto = imageUploadReader.read(photo, errors);
         if (errors.hasErrors()) return "coaches/form";
         Long id = coachRepository.create(coach);
+        personPhotoService.apply(id, storedPhoto, false);
         redirect.addFlashAttribute("success", "Тренер успешно добавлен");
         return "redirect:/coaches/" + id;
     }
@@ -69,10 +87,17 @@ public class CoachController {
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Coach coach,
                          BindingResult errors,
+                         @RequestParam(required = false) MultipartFile photo,
+                         @RequestParam(defaultValue = "false") boolean removePhoto,
                          RedirectAttributes redirect) {
-        if (errors.hasErrors()) return "coaches/form";
+        StoredImage storedPhoto = imageUploadReader.read(photo, errors);
         coach.setPersonId(id);
+        if (errors.hasErrors()) {
+            coach.setHasPhoto(personImageRepository.exists(id));
+            return "coaches/form";
+        }
         coachRepository.update(coach);
+        personPhotoService.apply(id, storedPhoto, removePhoto);
         redirect.addFlashAttribute("success", "Данные обновлены");
         return "redirect:/coaches/" + id;
     }

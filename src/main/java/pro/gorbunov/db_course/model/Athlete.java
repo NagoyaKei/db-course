@@ -21,7 +21,7 @@ public class Athlete extends Person {
     private String athleteNumber;
 
     @NotNull
-    @Min(value = 2000, message = "Год начала не может быть раньше 2000")
+    @Min(value = 1900, message = "Год начала не может быть раньше 1900")
     private Integer startYear;
 
     @NotBlank

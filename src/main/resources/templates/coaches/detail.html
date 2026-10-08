@@ -15,18 +15,19 @@
   </div>
 
   <div class="row g-4">
-    <div class="col-md-5">
+    <div class="col-lg-7">
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent fw-medium">Данные тренера</div>
         <div class="card-body">
-          <dl class="row mb-0">
+          <div class="d-flex flex-wrap gap-4">
+          <div th:replace="~{fragments/photo :: view(${coach})}"></div>
+          <dl class="row mb-0 align-content-start" style="flex: 1; min-width: 220px;">
             <dt class="col-6 text-muted">Лицензия</dt>
             <dd class="col-6"><code th:text="${coach.licenseNumber}"></code></dd>
-            <dt class="col-6 text-muted">Специализация</dt>
-            <dd class="col-6" th:text="${coach.specialization}"></dd>
             <dt class="col-6 text-muted">Стаж</dt>
             <dd class="col-6" th:text="${coach.experienceYears} + ' лет'"></dd>
           </dl>
+          </div>
         </div>
       </div>
     </div>

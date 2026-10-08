@@ -27,8 +27,8 @@ public class CoachRepository {
         c.setBirthDate(rs.getDate("birth_date").toLocalDate());
         c.setGender(rs.getString("gender"));
         c.setContactInfo(rs.getString("contact_info"));
+        c.setHasPhoto(rs.getBoolean("has_photo"));
         c.setLicenseNumber(rs.getString("license_number"));
-        c.setSpecialization(rs.getString("specialization"));
         c.setExperienceYears(rs.getInt("experience_years"));
         return c;
     };
@@ -37,7 +37,8 @@ public class CoachRepository {
             SELECT
                 p.id AS person_id, p.last_name, p.first_name, p.middle_name,
                 p.birth_date, p.gender, p.contact_info,
-                c.license_number, c.specialization, c.experience_years
+                EXISTS (SELECT 1 FROM person_image pi WHERE pi.person_id = p.id) AS has_photo,
+                c.license_number, c.experience_years
             FROM coach c
             JOIN person p ON p.id = c.id
             """;
@@ -76,12 +77,11 @@ public class CoachRepository {
 
         jdbc.update(
                 """
-                INSERT INTO coach (id, license_number, specialization, experience_years)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO coach (id, license_number, experience_years)
+                VALUES (?, ?, ?)
                 """,
                 personId,
                 coach.getLicenseNumber(),
-                coach.getSpecialization(),
                 coach.getExperienceYears() != null ? coach.getExperienceYears() : 0
         );
 
@@ -105,11 +105,10 @@ public class CoachRepository {
         jdbc.update(
                 """
                 UPDATE coach SET
-                    license_number = ?, specialization = ?, experience_years = ?
+                    license_number = ?, experience_years = ?
                 WHERE id = ?
                 """,
-                coach.getLicenseNumber(), coach.getSpecialization(),
-                coach.getExperienceYears(), coach.getPersonId()
+                coach.getLicenseNumber(), coach.getExperienceYears(), coach.getPersonId()
         );
     }
 

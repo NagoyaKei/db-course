@@ -9,11 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pro.gorbunov.db_course.model.Athlete;
+import pro.gorbunov.db_course.model.StoredImage;
 import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CoachRepository;
+import pro.gorbunov.db_course.repository.PersonImageRepository;
 import pro.gorbunov.db_course.repository.SportRankRepository;
+import pro.gorbunov.db_course.service.ImageUploadReader;
+import pro.gorbunov.db_course.service.PersonPhotoService;
 
 import javax.validation.Valid;
 
@@ -24,13 +29,22 @@ public class AthleteController {
     private final AthleteRepository athleteRepository;
     private final CoachRepository coachRepository;
     private final SportRankRepository sportRankRepository;
+    private final PersonImageRepository personImageRepository;
+    private final ImageUploadReader imageUploadReader;
+    private final PersonPhotoService personPhotoService;
 
     public AthleteController(AthleteRepository athleteRepository,
                              CoachRepository coachRepository,
-                             SportRankRepository sportRankRepository) {
+                             SportRankRepository sportRankRepository,
+                             PersonImageRepository personImageRepository,
+                             ImageUploadReader imageUploadReader,
+                             PersonPhotoService personPhotoService) {
         this.athleteRepository = athleteRepository;
         this.coachRepository = coachRepository;
         this.sportRankRepository = sportRankRepository;
+        this.personImageRepository = personImageRepository;
+        this.imageUploadReader = imageUploadReader;
+        this.personPhotoService = personPhotoService;
     }
 
     @GetMapping
@@ -63,14 +77,17 @@ public class AthleteController {
     @PostMapping
     public String create(@Valid @ModelAttribute Athlete athlete,
                          BindingResult errors,
+                         @RequestParam(required = false) MultipartFile photo,
                          Model model,
                          RedirectAttributes redirect) {
+        StoredImage storedPhoto = imageUploadReader.read(photo, errors);
         if (errors.hasErrors()) {
             model.addAttribute("coaches", coachRepository.findAll());
             model.addAttribute("ranks", sportRankRepository.findAll());
             return "athletes/form";
         }
         Long id = athleteRepository.create(athlete);
+        personPhotoService.apply(id, storedPhoto, false);
         redirect.addFlashAttribute("success", "Спортсмен успешно добавлен");
         return "redirect:/athletes/" + id;
     }
@@ -88,15 +105,21 @@ public class AthleteController {
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Athlete athlete,
                          BindingResult errors,
+                         @RequestParam(required = false) MultipartFile photo,
+                         @RequestParam(defaultValue = "false") boolean removePhoto,
                          Model model,
                          RedirectAttributes redirect) {
+        StoredImage storedPhoto = imageUploadReader.read(photo, errors);
         if (errors.hasErrors()) {
+            athlete.setPersonId(id);
+            athlete.setHasPhoto(personImageRepository.exists(id));
             model.addAttribute("coaches", coachRepository.findAll());
             model.addAttribute("ranks", sportRankRepository.findAll());
             return "athletes/form";
         }
         athlete.setPersonId(id);
         athleteRepository.update(athlete);
+        personPhotoService.apply(id, storedPhoto, removePhoto);
         redirect.addFlashAttribute("success", "Данные обновлены");
         return "redirect:/athletes/" + id;
     }

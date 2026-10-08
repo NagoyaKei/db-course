@@ -1,5 +1,7 @@
 package pro.gorbunov.db_course.controller;
 
+import javax.validation.Valid;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pro.gorbunov.db_course.model.Competition;
+import pro.gorbunov.db_course.model.Hill;
 import pro.gorbunov.db_course.repository.CompetitionRepository;
+import pro.gorbunov.db_course.repository.HillRepository;
 import pro.gorbunov.db_course.repository.JumpResultRepository;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/competitions")
@@ -21,11 +23,19 @@ public class CompetitionController {
 
     private final CompetitionRepository competitionRepository;
     private final JumpResultRepository jumpResultRepository;
+    private final HillRepository hillRepository;
 
     public CompetitionController(CompetitionRepository competitionRepository,
-                                 JumpResultRepository jumpResultRepository) {
+                                 JumpResultRepository jumpResultRepository,
+                                 HillRepository hillRepository) {
         this.competitionRepository = competitionRepository;
         this.jumpResultRepository = jumpResultRepository;
+        this.hillRepository = hillRepository;
+    }
+
+    @ModelAttribute("hills")
+    public List<Hill> hills() {
+        return hillRepository.findAll();
     }
 
     @GetMapping
@@ -44,7 +54,10 @@ public class CompetitionController {
 
     @GetMapping("/new")
     public String newForm(Model model) {
-        model.addAttribute("competition", new Competition());
+        Competition competition = new Competition();
+        competition.setStatus("PLANNED");
+        competition.setLevel("LOCAL");
+        model.addAttribute("competition", competition);
         return "competitions/form";
     }
 

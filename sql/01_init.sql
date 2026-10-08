@@ -51,7 +51,6 @@ CREATE TABLE person (
 CREATE TABLE coach (
                        person_id        BIGINT       PRIMARY KEY REFERENCES person(person_id) ON DELETE CASCADE,
                        license_number   VARCHAR(50)  NOT NULL UNIQUE,
-                       specialization   VARCHAR(100) NOT NULL,
                        experience_years SMALLINT     NOT NULL DEFAULT 0 CHECK (experience_years >= 0)
 );
 

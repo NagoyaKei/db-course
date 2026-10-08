@@ -1,7 +1,6 @@
 package pro.gorbunov.db_course.repository;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class CompetitionRepository {
         c.setHillId(rs.getObject("hill_id", Long.class));
         c.setHillName(rs.getString("hill_name"));
         c.setLevel(rs.getString("level"));
-        c.setMaxParticipants(rs.getInt("max_participants"));
+        c.setMaxParticipants(rs.getObject("max_participants", Integer.class));
         c.setStatus(rs.getString("status"));
         c.setParticipantsCount(rs.getInt("participants_count"));
         return c;
@@ -64,14 +63,14 @@ public class CompetitionRepository {
                     INSERT INTO competition (name, location, date, hill_id, level, max_participants, status)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
-                    Statement.RETURN_GENERATED_KEYS
+                    new String[]{"id"}
             );
             ps.setString(1, competition.getName());
             ps.setString(2, competition.getLocation());
             ps.setDate(3, java.sql.Date.valueOf(competition.getCompetitionDate()));
             ps.setObject(4, competition.getHillId());
             ps.setString(5, competition.getLevel() != null ? competition.getLevel() : "LOCAL");
-            ps.setInt(6, competition.getMaxParticipants() != null ? competition.getMaxParticipants() : 0);
+            ps.setObject(6, competition.getMaxParticipants());
             ps.setString(7, competition.getStatus() != null ? competition.getStatus() : "PLANNED");
             return ps;
         }, keyHolder);

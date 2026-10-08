@@ -27,6 +27,7 @@ public class AthleteRepository {
         a.setBirthDate(rs.getDate("birth_date").toLocalDate());
         a.setGender(rs.getString("gender"));
         a.setContactInfo(rs.getString("contact_info"));
+        a.setHasPhoto(rs.getBoolean("has_photo"));
         a.setCoachId(rs.getLong("coach_id"));
         a.setAthleteNumber(rs.getString("athlete_number"));
         a.setStartYear(rs.getInt("start_year"));
@@ -39,6 +40,7 @@ public class AthleteRepository {
             SELECT
                 p.id AS person_id, p.last_name, p.first_name, p.middle_name,
                 p.birth_date, p.gender, p.contact_info,
+                EXISTS (SELECT 1 FROM person_image pi WHERE pi.person_id = p.id) AS has_photo,
                 a.coach_id, a.number AS athlete_number, a.start_year, a.current_status,
                 cp.last_name || ' ' || cp.first_name AS coach_full_name
             FROM athlete a

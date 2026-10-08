@@ -13,9 +13,10 @@
   <div class="card border-0 shadow-sm" style="max-width: 640px;">
     <div class="card-body">
       <form th:action="${athlete.personId == null} ? @{/athletes} : @{/athletes/{id}/edit(id=${athlete.personId})}"
-            th:object="${athlete}" method="post">
+            th:object="${athlete}" method="post" enctype="multipart/form-data">
 
         <div class="row g-3">
+          <div th:replace="~{fragments/photo :: input(${athlete})}"></div>
           <div class="col-md-4">
             <label class="form-label">Фамилия <span class="text-danger">*</span></label>
             <input th:field="*{lastName}" type="text" class="form-control"
@@ -78,7 +79,7 @@
           <div class="col-md-6">
             <label class="form-label">Год начала <span class="text-danger">*</span></label>
             <input th:field="*{startYear}" type="number" class="form-control"
-                   min="2000" th:classappend="${#fields.hasErrors('startYear')} ? 'is-invalid'">
+                   min="1900" th:classappend="${#fields.hasErrors('startYear')} ? 'is-invalid'">
             <div class="invalid-feedback" th:errors="*{startYear}"></div>
           </div>
 <!--          <div class="col-md-6">-->

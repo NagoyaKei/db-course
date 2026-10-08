@@ -45,6 +45,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:href="@{/hills}">
+                        <i class="bi bi-triangle"></i> Трамплины
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/jumps}">
                         <i class="bi bi-graph-up"></i> Результаты прыжков
                     </a>
@@ -59,6 +64,12 @@
             <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle me-2"></i>
                 <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 

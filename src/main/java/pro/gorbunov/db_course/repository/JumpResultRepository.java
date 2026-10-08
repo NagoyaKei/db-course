@@ -1,7 +1,6 @@
 package pro.gorbunov.db_course.repository;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -83,7 +82,7 @@ public class JumpResultRepository {
                         (athlete_id, competition_id, timestamp, distance, style_points, wind_factor, gate_mark)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
-                    Statement.RETURN_GENERATED_KEYS
+                    new String[]{"id"}
             );
             ps.setLong(1, jump.getAthleteId());
             ps.setLong(2, jump.getCompetitionId());

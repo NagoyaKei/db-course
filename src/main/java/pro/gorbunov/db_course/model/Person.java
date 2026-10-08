@@ -37,6 +37,8 @@ public class Person {
     @Size(max = 200)
     private String contactInfo;
 
+    private boolean hasPhoto;
+
     public String getFullName() {
         return lastName + " " + firstName + (middleName != null && !middleName.isBlank() ? " " + middleName : "");
     }

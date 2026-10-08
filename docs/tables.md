@@ -1,6 +1,6 @@
 # Таблицы базы данных
 
-Схема: `sql/01_init.sql` + `sql/02_schema_fixes.sql`. Справочники: `sql/03_reference_data.sql`, тестовые данные: `sql/04_test_data.sql`. При изменении схемы обновлять этот файл на месте.
+Схема: `sql/01_init.sql` + `sql/02_schema_fixes.sql`. Справочники: `sql/03_reference_data.sql`, тестовые данные: `sql/04_test_data.sql`, фото людей: `sql/05_person_images.sql` (выгрузка из рабочей БД в base64, при смене фото пересоздавать файл). При изменении схемы обновлять этот файл на месте.
 
 Соглашения:
 - Колонки без префикса имени таблицы: PK везде `id`, а не `rank_id`, `person_id` и т.п. Внешние ключи называются по роли: `athlete_id`, `rank_id`, `hill_id`.
@@ -28,9 +28,14 @@
 Супертип: общие данные любого человека.
 - `id` PK, `first_name`, `last_name`, `middle_name`, `birth_date` NOT NULL, `gender` (M/F), `contact_info`, `created_at`
 
+### person_image
+Фото человека (спортсмена или тренера), не больше одного на person. Хранится в БД (BYTEA), чтобы попадать в бэкап вместе с данными и не зависеть от файлов контейнера.
+- `person_id` PK и FK person (CASCADE), `content_type` (image/jpeg, image/png, image/webp), `data` (до 2 МБ)
+- Загрузка: формы спортсмена и тренера; отдача: `GET /persons/{id}/photo` (`PersonPhotoController`). Тип файла проверяется по сигнатуре байтов, SVG не допускается
+
 ### coach
 Подтип person (1:1, `id` PK и FK person, CASCADE).
-- `license_number` NOT NULL UNIQUE, `specialization`, `experience_years`
+- `license_number` NOT NULL UNIQUE, `experience_years`
 
 ### athlete
 Подтип person (1:1, `id` PK и FK person, CASCADE).
@@ -72,6 +77,6 @@
 ## Связи (кратко)
 - person 1:1 coach, person 1:1 athlete; coach 1:N athlete
 - athlete 1:N jump_result, physiological_record, athlete_rank
-- competition 1:N jump_result; hill 1:N competition, norm
+- competition 1:N jump_result; hill 1:N competition, norm; person 1:1 person_image
 - jump_result 1:1 record; jump_result M:N sport_rank через standards_map
 - sport_rank M:N age_category, hill через norm

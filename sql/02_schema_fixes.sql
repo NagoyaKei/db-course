@@ -35,6 +35,11 @@ ALTER TABLE age_category
 ALTER TABLE age_category
     ADD CONSTRAINT excl_age_category_overlap EXCLUDE USING gist (age_range WITH &&);
 
+-- club members may have started long before 2000
+ALTER TABLE athlete
+    DROP CONSTRAINT athlete_start_year_check,
+    ADD CONSTRAINT athlete_start_year_check CHECK (start_year >= 1900 AND start_year <= EXTRACT(YEAR FROM CURRENT_DATE));
+
 -- constants are stored as UPPER_CASE English identifiers
 ALTER TABLE competition
     DROP CONSTRAINT competition_status_check,
@@ -52,6 +57,13 @@ CREATE TABLE hill (
     name        VARCHAR(100) NOT NULL,
     k_point     SMALLINT     NOT NULL CHECK (k_point > 0),
     meter_value DECIMAL(4,2) NOT NULL CHECK (meter_value > 0)
+);
+
+-- one photo per person is stored in the database, so it is backed up and restored together with the data
+CREATE TABLE person_image (
+    person_id    BIGINT      PRIMARY KEY REFERENCES person(id) ON DELETE CASCADE,
+    content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('image/jpeg', 'image/png', 'image/webp')),
+    data         BYTEA       NOT NULL CHECK (OCTET_LENGTH(data) <= 2097152)
 );
 
 ALTER TABLE competition

@@ -6,23 +6,26 @@ INSERT INTO person (first_name, last_name, middle_name, birth_date, gender, cont
     ('Дмитрий',   'Горбунов',  'Сергеевич',  '2005-11-10', 'M', 'gorbunov@mail.ru'),
     ('Алексей',   'Зимин',     'Павлович',   '2006-04-03', 'M', 'zimin@mail.ru'),
     ('Ольга',     'Снегирева', 'Николаевна', '2007-08-17', 'F', 'snegireva@mail.ru'),
-    ('Иван',      'Морозов',   'Денисович',  '2004-01-25', 'M', 'morozov@mail.ru');
+    ('Иван',      'Морозов',   'Денисович',  '2004-01-25', 'M', 'morozov@mail.ru'),
+    ('Владимир',  'Белоусов',  'Павлович',   '1946-07-14', 'M', 'belousov-vp@club.ru');
 
-INSERT INTO coach (id, license_number, specialization, experience_years) VALUES
-    (1, 'LIC-2005-001', 'Прыжки с трамплина', 20),
-    (2, 'LIC-2010-047', 'Прыжки с трамплина', 15);
+INSERT INTO coach (id, license_number, experience_years) VALUES
+    (1, 'LIC-2005-001', 20),
+    (2, 'LIC-2010-047', 15),
+    (7, 'LIC-1970-121', 55);
 
 INSERT INTO athlete (id, coach_id, number, start_year, current_status) VALUES
     (3, 1, 'ATH-2020-001', 2020, 'ACTIVE'),
     (4, 1, 'ATH-2021-002', 2021, 'ACTIVE'),
     (5, 2, 'ATH-2022-003', 2022, 'ACTIVE'),
-    (6, 2, 'ATH-2019-004', 2019, 'ACTIVE');
+    (6, 2, 'ATH-2019-004', 2019, 'ACTIVE'),
+    (7, null, 'ATH-1960-005', 1960, 'INACTIVE');
 
 INSERT INTO competition (name, date, location, hill_id, level, max_participants, status) VALUES
-    ('Открытый чемпионат клуба 2024',  '2024-02-10', 'Пермь, трамплин К-90', (SELECT id FROM hill WHERE type = 'K-90'),  'LOCAL',    30, 'FINISHED'),
-    ('Региональные соревнования 2024', '2024-03-15', 'Чайковский',           (SELECT id FROM hill WHERE type = 'K-90'),  'REGIONAL', 50, 'FINISHED'),
-    ('Кубок Урала 2025',               '2025-01-20', 'Нижний Тагил, К-120',  (SELECT id FROM hill WHERE type = 'K-120'), 'REGIONAL', 60, 'FINISHED'),
-    ('Чемпионат клуба 2026',           '2026-12-10', 'Пермь, трамплин К-90', (SELECT id FROM hill WHERE type = 'K-90'),  'LOCAL',    30, 'PLANNED');
+    ('Открытый чемпионат клуба 2024',  '2024-02-10', 'Пермь, трамплин К-90', (SELECT id FROM hill WHERE type = 'K-90'),  'LOCAL',    10, 'FINISHED'),
+    ('Региональные соревнования 2024', '2024-03-15', 'Чайковский',           (SELECT id FROM hill WHERE type = 'K-90'),  'REGIONAL', 30, 'FINISHED'),
+    ('Кубок Урала 2025',               '2025-01-20', 'Нижний Тагил, К-120',  (SELECT id FROM hill WHERE type = 'K-120'), 'REGIONAL', 30, 'FINISHED'),
+    ('Чемпионат клуба 2026',           '2026-12-10', 'Пермь, трамплин К-90', (SELECT id FROM hill WHERE type = 'K-90'),  'LOCAL',    20, 'PLANNED');
 
 INSERT INTO jump_result (athlete_id, competition_id, timestamp, distance, style_points, wind_factor, attempt_number, gate_mark) VALUES
     (3, 1, '2024-02-10 10:15:00', 72.50, 51.5,  0.30, 1, 'G10'),

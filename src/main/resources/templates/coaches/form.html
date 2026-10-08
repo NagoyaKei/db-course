@@ -13,9 +13,10 @@
   <div class="card border-0 shadow-sm" style="max-width: 580px;">
     <div class="card-body">
       <form th:action="${coach.personId == null} ? @{/coaches} : @{/coaches/{id}/edit(id=${coach.personId})}"
-            th:object="${coach}" method="post">
+            th:object="${coach}" method="post" enctype="multipart/form-data">
 
         <div class="row g-3">
+          <div th:replace="~{fragments/photo :: input(${coach})}"></div>
           <div class="col-md-4">
             <label class="form-label">Фамилия <span class="text-danger">*</span></label>
             <input th:field="*{lastName}" type="text" class="form-control"
@@ -63,13 +64,6 @@
             <label class="form-label">Стаж (лет)</label>
             <input th:field="*{experienceYears}" type="number"
                    class="form-control" min="0" max="50">
-          </div>
-
-          <div class="col-12">
-            <label class="form-label">Специализация <span class="text-danger">*</span></label>
-            <input th:field="*{specialization}" type="text" class="form-control"
-                   th:classappend="${#fields.hasErrors('specialization')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{specialization}"></div>
           </div>
         </div>
 
