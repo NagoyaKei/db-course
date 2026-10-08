@@ -1,31 +1,25 @@
 package pro.gorbunov.db_course.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class SportRank {
-    private Long rankId;
+    private Long id;
 
     @NotBlank
     @Size(max = 100)
-    private String rankName; // например: "КМС", "1 разряд", "МС"
+    private String type; // например: "CMS", "FIRST_CLASS", "MS"
 
-    @NotNull
-    @DecimalMin("0.0")
-    private BigDecimal minDistance; // минимальная дистанция для получения разряда
-
-    private Long ageCategoryId; // FK -> AGE_CATEGORY
+    @NotBlank
+    @Size(max = 100)
+    private String name; // название на русском
 
     @Min(1) @Max(10)
-    private Integer rankOrder; // порядок для сортировки (1 - низший, 10 - высший)
+    private Integer sortOrder; // порядок для сортировки (1 - низший, 10 - высший)
 }

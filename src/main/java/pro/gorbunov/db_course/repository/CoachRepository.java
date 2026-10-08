@@ -1,5 +1,8 @@
 package pro.gorbunov.db_course.repository;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,11 +11,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pro.gorbunov.db_course.model.Coach;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,11 +35,11 @@ public class CoachRepository {
 
     private static final String BASE_SELECT = """
             SELECT
-                p.person_id, p.last_name, p.first_name, p.middle_name,
+                p.id AS person_id, p.last_name, p.first_name, p.middle_name,
                 p.birth_date, p.gender, p.contact_info,
                 c.license_number, c.specialization, c.experience_years
             FROM coach c
-            JOIN person p ON p.person_id = c.person_id
+            JOIN person p ON p.id = c.id
             """;
 
     public List<Coach> findAll() {
@@ -49,7 +47,7 @@ public class CoachRepository {
     }
 
     public Optional<Coach> findById(Long id) {
-        return jdbc.query(BASE_SELECT + "WHERE c.person_id = ?", rowMapper, id)
+        return jdbc.query(BASE_SELECT + "WHERE c.id = ?", rowMapper, id)
                 .stream().findFirst();
     }
 
@@ -63,7 +61,7 @@ public class CoachRepository {
                     INSERT INTO person (last_name, first_name, middle_name, birth_date, gender, contact_info)
                     VALUES (?, ?, ?, ?, ?, ?)
                     """,
-                    Statement.RETURN_GENERATED_KEYS
+                    new String[]{"id"}
             );
             ps.setString(1, coach.getLastName());
             ps.setString(2, coach.getFirstName());
@@ -74,11 +72,11 @@ public class CoachRepository {
             return ps;
         }, keyHolder);
 
-        Long personId = keyHolder.getKey().longValue();
+        Long personId = keyHolder.getKeyAs(Long.class);
 
         jdbc.update(
                 """
-                INSERT INTO coach (person_id, license_number, specialization, experience_years)
+                INSERT INTO coach (id, license_number, specialization, experience_years)
                 VALUES (?, ?, ?, ?)
                 """,
                 personId,
@@ -97,7 +95,7 @@ public class CoachRepository {
                 UPDATE person SET
                     last_name = ?, first_name = ?, middle_name = ?,
                     birth_date = ?, gender = ?, contact_info = ?
-                WHERE person_id = ?
+                WHERE id = ?
                 """,
                 coach.getLastName(), coach.getFirstName(), coach.getMiddleName(),
                 java.sql.Date.valueOf(coach.getBirthDate()),
@@ -108,7 +106,7 @@ public class CoachRepository {
                 """
                 UPDATE coach SET
                     license_number = ?, specialization = ?, experience_years = ?
-                WHERE person_id = ?
+                WHERE id = ?
                 """,
                 coach.getLicenseNumber(), coach.getSpecialization(),
                 coach.getExperienceYears(), coach.getPersonId()

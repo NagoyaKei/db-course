@@ -35,7 +35,11 @@
 
           <div class="col-md-6">
             <label class="form-label">Дата рождения <span class="text-danger">*</span></label>
-            <input th:field="*{birthDate}" type="date" class="form-control"
+            <input type="date"
+                   id="birthDate"
+                   name="birthDate"
+                   class="form-control"
+                   th:value="${#temporals.format(birthDate, 'dd.MM.yyyy')}"
                    th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'">
             <div class="invalid-feedback" th:errors="*{birthDate}"></div>
           </div>
@@ -58,7 +62,7 @@
                     th:classappend="${#fields.hasErrors('coachId')} ? 'is-invalid'">
               <option value="">- выберите -</option>
               <option th:each="c : ${coaches}"
-                      th:value="${c.coachId}"
+                      th:value="${c.personId}"
                       th:text="${c.fullName}"></option>
             </select>
             <div class="invalid-feedback" th:errors="*{coachId}"></div>
@@ -77,15 +81,15 @@
                    min="2000" th:classappend="${#fields.hasErrors('startYear')} ? 'is-invalid'">
             <div class="invalid-feedback" th:errors="*{startYear}"></div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Разряд</label>
-            <select th:field="*{currentRankId}" class="form-select">
-              <option value="">- не присвоен -</option>
-              <option th:each="r : ${ranks}"
-                      th:value="${r.rankId}"
-                      th:text="${r.rankName}"></option>
-            </select>
-          </div>
+<!--          <div class="col-md-6">-->
+<!--            <label class="form-label">Разряд</label>-->
+<!--            <select th:field="*{currentRankId}" class="form-select">-->
+<!--              <option value="">- не присвоен -</option>-->
+<!--              <option th:each="r : ${ranks}"-->
+<!--                      th:value="${r.rankId}"-->
+<!--                      th:text="${r.rankName}"></option>-->
+<!--            </select>-->
+<!--          </div>-->
 
           <div class="col-md-6">
             <label class="form-label">Статус</label>

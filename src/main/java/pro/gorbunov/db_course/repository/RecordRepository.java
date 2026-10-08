@@ -1,5 +1,9 @@
 package pro.gorbunov.db_course.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,11 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import pro.gorbunov.db_course.model.Record;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,16 +32,16 @@ public class RecordRepository {
 
     private static final String BASE_SELECT = """
             SELECT
-                r.record_id,
+                r.id AS record_id,
                 r.jump_id,
-                r.record_type,
+                r.type AS record_type,
                 r.verification_date,
                 jr.distance,
-                jr.jump_timestamp::date AS jump_date
+                jr.timestamp::date AS jump_date
             FROM record r
-            JOIN jump_result jr  ON jr.jump_id  = r.jump_id
-            JOIN athlete a       ON a.person_id = jr.athlete_id
-            JOIN person p        ON p.person_id = a.person_id
+            JOIN jump_result jr  ON jr.id = r.jump_id
+            JOIN athlete a       ON a.id = jr.athlete_id
+            JOIN person p        ON p.id = a.id
             JOIN competition c   ON c.competition_id   = jr.competition_id
             """;
 
@@ -52,14 +51,14 @@ public class RecordRepository {
 
     public List<Record> findByType(String recordType) {
         return jdbc.query(
-                BASE_SELECT + "WHERE r.record_type = ? ORDER BY jr.distance DESC",
+                BASE_SELECT + "WHERE r.type = ? ORDER BY jr.distance DESC",
                 rowMapper, recordType
         );
     }
 
     public Optional<Record> findById(Long id) {
         return jdbc.query(
-                BASE_SELECT + "WHERE r.record_id = ?",
+                BASE_SELECT + "WHERE r.id = ?",
                 rowMapper, id
         ).stream().findFirst();
     }
@@ -70,7 +69,7 @@ public class RecordRepository {
         jdbc.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     """
-                    INSERT INTO record (jump_id, record_type, verification_date)
+                    INSERT INTO record (jump_id, type, verification_date)
                     VALUES (?, ?, ?)
                     """,
                     Statement.RETURN_GENERATED_KEYS
@@ -87,6 +86,6 @@ public class RecordRepository {
     }
 
     public void delete(Long id) {
-        jdbc.update("DELETE FROM record WHERE record_id = ?", id);
+        jdbc.update("DELETE FROM record WHERE id = ?", id);
     }
 }

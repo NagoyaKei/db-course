@@ -1,5 +1,8 @@
 package pro.gorbunov.db_course.repository;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,11 +11,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pro.gorbunov.db_course.model.Athlete;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,14 +37,14 @@ public class AthleteRepository {
 
     private static final String BASE_SELECT = """
             SELECT
-                p.person_id, p.last_name, p.first_name, p.middle_name,
+                p.id AS person_id, p.last_name, p.first_name, p.middle_name,
                 p.birth_date, p.gender, p.contact_info,
-                a.coach_id, a.athlete_number, a.start_year, a.current_status,
+                a.coach_id, a.number AS athlete_number, a.start_year, a.current_status,
                 cp.last_name || ' ' || cp.first_name AS coach_full_name
             FROM athlete a
-            JOIN person p  ON p.person_id = a.person_id
-            LEFT JOIN coach c  ON c.person_id = a.coach_id
-            LEFT JOIN person cp ON cp.person_id = c.person_id
+            JOIN person p  ON p.id = a.id
+            LEFT JOIN coach c  ON c.id = a.coach_id
+            LEFT JOIN person cp ON cp.id = c.id
             """;
 
     public List<Athlete> findAll() {
@@ -54,7 +52,7 @@ public class AthleteRepository {
     }
 
     public Optional<Athlete> findById(Long id) {
-        return jdbc.query(BASE_SELECT + "WHERE a.person_id = ?", rowMapper, id)
+        return jdbc.query(BASE_SELECT + "WHERE a.id = ?", rowMapper, id)
                 .stream().findFirst();
     }
 
@@ -78,7 +76,7 @@ public class AthleteRepository {
                     INSERT INTO person (last_name, first_name, middle_name, birth_date, gender, contact_info)
                     VALUES (?, ?, ?, ?, ?, ?)
                     """,
-                    Statement.RETURN_GENERATED_KEYS
+                    new String[]{"id"}
             );
             ps.setString(1, athlete.getLastName());
             ps.setString(2, athlete.getFirstName());
@@ -89,18 +87,18 @@ public class AthleteRepository {
             return ps;
         }, keyHolder);
 
-        Long personId = keyHolder.getKey().longValue();
+        Long personId = keyHolder.getKeyAs(Long.class);
 
         jdbc.update(
                 """
-                INSERT INTO athlete (person_id, coach_id, athlete_number, start_year, current_status)
+                INSERT INTO athlete (id, coach_id, number, start_year, current_status)
                 VALUES (?, ?, ?, ?, ?)
                 """,
                 personId,
                 athlete.getCoachId(),
                 athlete.getAthleteNumber(),
                 athlete.getStartYear(),
-                athlete.getCurrentStatus() != null ? athlete.getCurrentStatus() : "active"
+                athlete.getCurrentStatus() != null ? athlete.getCurrentStatus() : "ACTIVE"
         );
 
         return personId;
@@ -113,7 +111,7 @@ public class AthleteRepository {
                 UPDATE person SET
                     last_name = ?, first_name = ?, middle_name = ?,
                     birth_date = ?, gender = ?, contact_info = ?
-                WHERE person_id = ?
+                WHERE id = ?
                 """,
                 athlete.getLastName(), athlete.getFirstName(), athlete.getMiddleName(),
                 java.sql.Date.valueOf(athlete.getBirthDate()),
@@ -123,8 +121,8 @@ public class AthleteRepository {
         jdbc.update(
                 """
                 UPDATE athlete SET
-                    coach_id = ?, athlete_number = ?, start_year = ?, current_status = ?
-                WHERE person_id = ?
+                    coach_id = ?, number = ?, start_year = ?, current_status = ?
+                WHERE id = ?
                 """,
                 athlete.getCoachId(), athlete.getAthleteNumber(),
                 athlete.getStartYear(), athlete.getCurrentStatus(),
@@ -133,7 +131,7 @@ public class AthleteRepository {
     }
 
     public void deactivate(Long id) {
-        jdbc.update("UPDATE athlete SET current_status = 'retired' WHERE person_id = ?", id);
+        jdbc.update("UPDATE athlete SET current_status = 'INACTIVE' WHERE id = ?", id);
     }
 
     public int count() {

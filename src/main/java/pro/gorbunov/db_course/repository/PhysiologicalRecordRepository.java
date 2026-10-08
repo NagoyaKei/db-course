@@ -1,5 +1,9 @@
 package pro.gorbunov.db_course.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,11 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import pro.gorbunov.db_course.model.PhysiologicalRecord;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class PhysiologicalRecordRepository {
 
     private final RowMapper<PhysiologicalRecord> rowMapper = (rs, rowNum) -> {
         PhysiologicalRecord r = new PhysiologicalRecord();
-        r.setRecordId(rs.getLong("record_id"));
+        r.setRecordId(rs.getLong("id"));
         r.setAthleteId(rs.getLong("athlete_id"));
         r.setMeasureDate(rs.getDate("measure_date").toLocalDate());
         r.setHeight(rs.getBigDecimal("height"));
@@ -78,6 +77,6 @@ public class PhysiologicalRecordRepository {
     }
 
     public void delete(Long id) {
-        jdbc.update("DELETE FROM physiological_record WHERE record_id = ?", id);
+        jdbc.update("DELETE FROM physiological_record WHERE id = ?", id);
     }
 }

@@ -1,5 +1,11 @@
 package pro.gorbunov.db_course.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,13 +13,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import pro.gorbunov.db_course.model.JumpResult;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class JumpResultRepository {
         j.setStylePoints(rs.getBigDecimal("style_points"));
         j.setWindFactor(rs.getBigDecimal("wind_factor"));
         j.setGateMark(rs.getString("gate_mark"));
-        Timestamp ts = rs.getTimestamp("jump_timestamp");
+        Timestamp ts = rs.getTimestamp("timestamp");
         j.setJumpTimestamp(ts != null ? ts.toLocalDateTime() : null);
         j.setAttemptNumber(rs.getInt("attempt_number"));
         j.setAthleteFullName(rs.getString("athlete_full_name"));
@@ -40,29 +39,29 @@ public class JumpResultRepository {
 
     private static final String BASE_SELECT = """
             SELECT
-                jr.jump_id, jr.athlete_id, jr.competition_id,
+                jr.id AS jump_id, jr.athlete_id, jr.competition_id,
                 jr.distance, jr.style_points, jr.wind_factor,
-                jr.gate_mark, jr.jump_timestamp, jr.attempt_number,
+                jr.gate_mark, jr.timestamp, jr.attempt_number,
                 p.last_name || ' ' || p.first_name as athlete_full_name,
                 c.name as competition_name
             FROM jump_result jr
-            JOIN athlete a    ON a.person_id = jr.athlete_id
-            JOIN person p     ON p.person_id = a.person_id
+            JOIN athlete a    ON a.id = jr.athlete_id
+            JOIN person p     ON p.id = a.id
             JOIN competition c ON c.id  = jr.competition_id
             """;
 
     public List<JumpResult> findAll() {
-        return jdbc.query(BASE_SELECT + "ORDER BY jr.jump_timestamp DESC", rowMapper);
+        return jdbc.query(BASE_SELECT + "ORDER BY jr.timestamp DESC", rowMapper);
     }
 
     public Optional<JumpResult> findById(Long id) {
-        return jdbc.query(BASE_SELECT + "WHERE jr.jump_id = ?", rowMapper, id)
+        return jdbc.query(BASE_SELECT + "WHERE jr.id = ?", rowMapper, id)
                 .stream().findFirst();
     }
 
     public List<JumpResult> findByAthlete(Long athleteId) {
         return jdbc.query(
-                BASE_SELECT + "WHERE jr.athlete_id = ? ORDER BY jr.jump_timestamp DESC",
+                BASE_SELECT + "WHERE jr.athlete_id = ? ORDER BY jr.timestamp DESC",
                 rowMapper, athleteId
         );
     }
@@ -81,7 +80,7 @@ public class JumpResultRepository {
             PreparedStatement ps = con.prepareStatement(
                     """
                     INSERT INTO jump_result
-                        (athlete_id, competition_id, jump_timestamp, distance, style_points, wind_factor, gate_mark)
+                        (athlete_id, competition_id, timestamp, distance, style_points, wind_factor, gate_mark)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
                     Statement.RETURN_GENERATED_KEYS
@@ -106,7 +105,7 @@ public class JumpResultRepository {
                 """
                 UPDATE jump_result SET
                     distance = ?, style_points = ?, wind_factor = ?, gate_mark = ?
-                WHERE jump_id = ?
+                WHERE id = ?
                 """,
                 jump.getDistance(), jump.getStylePoints(),
                 jump.getWindFactor(), jump.getGateMark(),
@@ -115,6 +114,6 @@ public class JumpResultRepository {
     }
 
     public void delete(Long id) {
-        jdbc.update("DELETE FROM jump_result WHERE jump_id = ?", id);
+        jdbc.update("DELETE FROM jump_result WHERE id = ?", id);
     }
 }
