@@ -7,65 +7,121 @@
 <body>
 <div layout:fragment="content">
 
-  <div class="page-header">
-    <h1 class="h3">Панель управления</h1>
-    <p class="text-muted mb-0">Система учета клуба «Летающий лыжник»</p>
+  <section class="hero mb-4">
+    <h1 class="h2">Клуб «Летающий лыжник»</h1>
+    <p class="mb-4">Учет спортсменов, соревнований и результатов прыжков с трамплина</p>
+    <div class="d-flex flex-wrap gap-2">
+      <a th:href="@{/jumps/new}" class="btn btn-light"><i class="bi bi-plus-lg me-1"></i> Добавить результат</a>
+      <a th:href="@{/athletes/new}" class="btn btn-outline-light"><i class="bi bi-person-plus me-1"></i> Новый спортсмен</a>
+    </div>
+  </section>
+
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+      <a th:href="@{/athletes}" class="card h-100 text-reset">
+        <div class="card-body kpi">
+          <div class="kpi-icon is-primary"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="kpi-value" th:text="${athleteCount}">0</div>
+            <div class="kpi-label">Спортсменов</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <a th:href="@{/coaches}" class="card h-100 text-reset">
+        <div class="card-body kpi">
+          <div class="kpi-icon is-success"><i class="bi bi-person-badge"></i></div>
+          <div>
+            <div class="kpi-value" th:text="${coachCount}">0</div>
+            <div class="kpi-label">Тренеров</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <a th:href="@{/competitions}" class="card h-100 text-reset">
+        <div class="card-body kpi">
+          <div class="kpi-icon is-warning"><i class="bi bi-trophy"></i></div>
+          <div>
+            <div class="kpi-value" th:text="${competitionCount}">0</div>
+            <div class="kpi-label">Соревнований</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <a th:href="@{/jumps}" class="card h-100 text-reset">
+        <div class="card-body kpi">
+          <div class="kpi-icon is-danger"><i class="bi bi-graph-up"></i></div>
+          <div>
+            <div class="kpi-value" th:text="${jumpCount}">0</div>
+            <div class="kpi-label">Прыжков</div>
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
 
   <div class="row g-4">
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="fs-1 text-primary"><i class="bi bi-people"></i></div>
-          <div>
-            <div class="fs-2 fw-bold" th:text="${athleteCount}">0</div>
-            <div class="text-muted small">Спортсменов</div>
-          </div>
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Последние результаты</span>
+          <a th:href="@{/jumps}" class="small">Все результаты</a>
         </div>
-        <div class="card-footer bg-transparent border-0">
-          <a th:href="@{/athletes}" class="btn btn-sm btn-outline-primary w-100">Открыть</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="fs-1 text-success"><i class="bi bi-person-badge"></i></div>
-          <div>
-            <div class="fs-2 fw-bold" th:text="${coachCount}">0</div>
-            <div class="text-muted small">Тренеров</div>
-          </div>
-        </div>
-        <div class="card-footer bg-transparent border-0">
-          <a th:href="@{/coaches}" class="btn btn-sm btn-outline-success w-100">Открыть</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="fs-1 text-warning"><i class="bi bi-trophy"></i></div>
-          <div>
-            <div class="fs-2 fw-bold" th:text="${competitionCount}">0</div>
-            <div class="text-muted small">Соревнований</div>
-          </div>
-        </div>
-        <div class="card-footer bg-transparent border-0">
-          <a th:href="@{/competitions}" class="btn btn-sm btn-outline-warning w-100">Открыть</a>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Спортсмен</th>
+              <th>Соревнование</th>
+              <th class="text-end">Дистанция, м</th>
+              <th class="text-end">Очки</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="j : ${latestJumps}">
+              <td class="text-nowrap" th:text="${#temporals.format(j.jumpTimestamp, 'dd.MM.yyyy')}"></td>
+              <td><a th:href="@{/athletes/{id}(id=${j.athleteId})}" th:text="${j.athleteFullName}" class="fw-semibold"></a></td>
+              <td><a th:href="@{/competitions/{id}(id=${j.competitionId})}" th:text="${j.competitionName}"></a></td>
+              <td class="num num-strong" th:text="${j.distance}"></td>
+              <td class="num" th:text="${j.points}"></td>
+            </tr>
+            <th:block th:if="${#lists.isEmpty(latestJumps)}"><tr th:replace="~{fragments/ui :: emptyRow(5, 'bi-graph-up', 'Результатов пока нет')}"></tr></th:block>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="fs-1 text-danger"><i class="bi bi-graph-up"></i></div>
-          <div>
-            <div class="fs-2 fw-bold" th:text="${jumpCount}">0</div>
-            <div class="text-muted small">Прыжков</div>
+
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header">Ближайшее соревнование</div>
+        <div class="card-body" th:if="${nextCompetition != null}">
+          <h2 class="h5" th:text="${nextCompetition.name}"></h2>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span th:replace="~{fragments/ui :: competitionLevel(${nextCompetition.level})}"></span>
+            <span th:replace="~{fragments/ui :: competitionStatus(${nextCompetition.status})}"></span>
           </div>
+          <div class="facts mb-3">
+            <div>
+              <div class="fact-label">Дата</div>
+              <div class="fact-value" th:text="${#temporals.format(nextCompetition.competitionDate, 'dd.MM.yyyy')}"></div>
+            </div>
+            <div th:if="${nextCompetition.hillName}">
+              <div class="fact-label">Трамплин</div>
+              <div class="fact-value" th:text="${nextCompetition.hillName}"></div>
+            </div>
+          </div>
+          <a th:href="@{/competitions/{id}(id=${nextCompetition.id})}" class="btn btn-outline-secondary btn-sm">Подробнее</a>
         </div>
-        <div class="card-footer bg-transparent border-0">
-          <a th:href="@{/jumps}" class="btn btn-sm btn-outline-danger w-100">Открыть</a>
+        <div class="card-body" th:if="${nextCompetition == null}">
+          <div class="empty-state">
+            <i class="bi bi-calendar-event"></i>
+            <div>Запланированных соревнований нет</div>
+          </div>
         </div>
       </div>
     </div>

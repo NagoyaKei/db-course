@@ -33,6 +33,9 @@ public class JumpResultRepository {
         j.setAttemptNumber(rs.getInt("attempt_number"));
         j.setAthleteFullName(rs.getString("athlete_full_name"));
         j.setCompetitionName(rs.getString("competition_name"));
+        j.setHillType(rs.getString("hill_type"));
+        j.setAgeCategoryName(rs.getString("age_category_name"));
+        j.setPoints(rs.getBigDecimal("points"));
         return j;
     };
 
@@ -42,11 +45,13 @@ public class JumpResultRepository {
                 jr.distance, jr.style_points, jr.wind_factor,
                 jr.gate_mark, jr.timestamp, jr.attempt_number,
                 p.last_name || ' ' || p.first_name as athlete_full_name,
-                c.name as competition_name
+                c.name as competition_name,
+                jc.hill_type, jc.age_category_name, jc.points
             FROM jump_result jr
             JOIN athlete a    ON a.id = jr.athlete_id
             JOIN person p     ON p.id = a.id
             JOIN competition c ON c.id  = jr.competition_id
+            JOIN v_jump_context jc ON jc.jump_id = jr.id
             """;
 
     public List<JumpResult> findAll() {

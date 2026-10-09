@@ -1,14 +1,13 @@
 package pro.gorbunov.db_course.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -42,4 +41,7 @@ public class JumpResult {
     /* additional fields for view */
     private String athleteFullName;
     private String competitionName;
+    private String hillType;
+    private String ageCategoryName;
+    private BigDecimal points;
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Нормативы</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3">Нормативы</h1>
+    <p class="text-secondary mb-0">Минимальная дистанция для присвоения разряда по возрасту, полу и трамплину</p>
+  </div>
+
+  <div class="card mb-4" th:if="${selectedHill != null}">
+    <div class="card-toolbar">
+      <ul class="nav nav-pills" aria-label="Трамплин">
+        <li class="nav-item" th:each="h : ${hills}">
+          <a class="nav-link" th:href="@{/norms(hill=${h.type}, gender=${selectedGender})}"
+             th:classappend="${h.type == selectedHill.type} ? 'active'" th:text="${h.name}"></a>
+        </li>
+      </ul>
+      <ul class="nav nav-pills" aria-label="Пол">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/norms(hill=${selectedHill.type}, gender='M')}"
+             th:classappend="${selectedGender == 'M'} ? 'active'"><i class="bi bi-gender-male me-1"></i>Мужчины</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/norms(hill=${selectedHill.type}, gender='F')}"
+             th:classappend="${selectedGender == 'F'} ? 'active'"><i class="bi bi-gender-female me-1"></i>Женщины</a>
+        </li>
+      </ul>
+      <div class="row-count">
+        K-точка <span class="fw-semibold" th:text="${selectedHill.kpoint}"></span> м,
+        <span class="fw-semibold" th:text="${selectedHill.meterValue}"></span> очка за метр
+      </div>
+    </div>
+
+    <div class="table-responsive" th:if="${matrix != null and !#lists.isEmpty(matrix.rows())}">
+      <table class="table align-middle norm-table">
+        <thead>
+        <tr>
+          <th>Разряд</th>
+          <th class="text-center" th:each="column : ${matrix.columns()}">
+            <div th:text="${column.name()}"></div>
+            <div class="cell-sub text-lowercase fw-normal"
+                 th:text="${column.maxAge() != null} ? ${column.minAge()} + '-' + ${column.maxAge()} + ' лет' : ${column.minAge()} + ' лет и старше'"></div>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${matrix.rows()}">
+          <th scope="row" class="fw-semibold" th:text="${row.rankName()}"></th>
+          <td th:each="cell : ${row.cells()}" class="norm-cell"
+              th:classappend="${cell.distance() != null} ? 'heat' : 'empty'"
+              th:style="${cell.distance() != null} ? '--heat: ' + ${cell.heat()}">
+            <span th:if="${cell.distance() != null}"><span th:text="${#numbers.formatDecimal(cell.distance(), 1, 0)}"></span> м</span>
+            <span th:if="${cell.distance() == null}" title="Разряд для этой категории не присваивается" aria-label="нет норматива">-</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${matrix == null or #lists.isEmpty(matrix.rows())}" class="empty-state">
+      <i class="bi bi-table"></i>
+      <div>Для этого трамплина и пола нормативов нет</div>
+    </div>
+  </div>
+
+  <div class="empty-state card" th:if="${selectedHill == null}">
+    <i class="bi bi-triangle"></i>
+    <div>Сначала добавьте трамплин в справочнике</div>
+  </div>
+
+  <p class="text-secondary small">
+    Чем темнее ячейка, тем выше норматив. Чем старше возрастная категория, тем выше разряд, который можно в ней получить;
+    прочерк означает, что в категории такой разряд не присваивается. Нормативы заданы для K-90 и пересчитаны по K-точке трамплина,
+    для женщин с коэффициентом 0,9 (учебные данные).
+  </p>
+
+</div>
+</body>
+</html>

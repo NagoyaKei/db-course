@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<body>
+
+<span th:fragment="athleteStatus(status)" th:switch="${status}">
+  <span th:case="'ACTIVE'" class="badge-soft is-success"><i class="bi bi-check-circle"></i> Активен</span>
+  <span th:case="'INACTIVE'" class="badge-soft is-secondary"><i class="bi bi-dash-circle"></i> Неактивен</span>
+  <span th:case="'SUSPENDED'" class="badge-soft is-danger"><i class="bi bi-slash-circle"></i> Дисквалифицирован</span>
+  <span th:case="*" class="badge-soft is-secondary" th:text="${status}"></span>
+</span>
+
+<span th:fragment="competitionLevel(level)" th:switch="${level}">
+  <span th:case="'LOCAL'" class="badge-soft is-secondary"><i class="bi bi-geo-alt"></i> Местный</span>
+  <span th:case="'REGIONAL'" class="badge-soft is-primary"><i class="bi bi-map"></i> Региональный</span>
+  <span th:case="'NATIONAL'" class="badge-soft is-warning"><i class="bi bi-flag"></i> Национальный</span>
+  <span th:case="'INTERNATIONAL'" class="badge-soft is-danger"><i class="bi bi-globe2"></i> Международный</span>
+  <span th:case="*" class="badge-soft is-secondary" th:text="${level}"></span>
+</span>
+
+<span th:fragment="competitionStatus(status)" th:switch="${status}">
+  <span th:case="'PLANNED'" class="badge-soft is-info"><i class="bi bi-calendar-event"></i> Запланировано</span>
+  <span th:case="'ACTIVE'" class="badge-soft is-success"><i class="bi bi-play-circle"></i> Идет</span>
+  <span th:case="'FINISHED'" class="badge-soft is-secondary"><i class="bi bi-check2-all"></i> Завершено</span>
+  <span th:case="'CANCELLED'" class="badge-soft is-danger"><i class="bi bi-x-circle"></i> Отменено</span>
+  <span th:case="*" class="badge-soft is-secondary" th:text="${status}"></span>
+</span>
+
+<span th:fragment="rank(name)">
+  <span th:if="${name}" class="badge-soft is-primary"><i class="bi bi-award"></i> <span th:text="${name}"></span></span>
+  <span th:unless="${name}" class="text-secondary small">не присвоен</span>
+</span>
+
+<span th:fragment="recordType(type)" th:switch="${type}">
+  <span th:case="'CLUB'" class="badge-soft is-secondary"><i class="bi bi-house"></i> Клубный</span>
+  <span th:case="'REGIONAL'" class="badge-soft is-primary"><i class="bi bi-map"></i> Региональный</span>
+  <span th:case="'NATIONAL'" class="badge-soft is-warning"><i class="bi bi-flag"></i> Национальный</span>
+  <span th:case="'INTERNATIONAL'" class="badge-soft is-danger"><i class="bi bi-globe2"></i> Международный</span>
+  <span th:case="*" class="text-secondary small">не зафиксирован</span>
+</span>
+
+<tr th:fragment="emptyRow(colspan, icon, text)">
+  <td th:colspan="${colspan}">
+    <div class="empty-state">
+      <i class="bi" th:classappend="${icon}"></i>
+      <div th:text="${text}"></div>
+    </div>
+  </td>
+</tr>
+
+</body>
+</html>

@@ -6,55 +6,65 @@
 <body>
 <div layout:fragment="content">
 
-  <div class="page-header d-flex justify-content-between align-items-center">
+  <div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
     <div>
       <h1 class="h3">Результаты прыжков</h1>
-      <p class="text-muted mb-0">Все зарегистрированные прыжки</p>
+      <p class="text-secondary mb-0">Все зарегистрированные прыжки</p>
     </div>
     <a th:href="@{/jumps/new}" class="btn btn-primary">
       <i class="bi bi-plus-lg me-1"></i> Добавить
     </a>
   </div>
 
-  <div class="card border-0 shadow-sm">
+  <div class="card">
+    <div class="card-toolbar">
+      <div class="search-input">
+        <i class="bi bi-search"></i>
+        <input type="search" class="form-control" placeholder="Поиск по спортсмену или соревнованию"
+               aria-label="Поиск" data-table-filter="#jumpsTable" data-table-count="#jumpsCount">
+      </div>
+      <div class="row-count">Найдено: <span id="jumpsCount" th:text="${#lists.size(jumps)}"></span></div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead class="table-light">
+      <table id="jumpsTable" class="table table-hover align-middle">
+        <thead>
         <tr>
+          <th>Дата</th>
           <th>Спортсмен</th>
           <th>Соревнование</th>
-          <th>Дистанция (м)</th>
-          <th>Стиль</th>
-          <th>Ветер</th>
-          <th>Попытка</th>
+          <th>Трамплин</th>
+          <th>Категория</th>
+          <th class="text-end">Дистанция, м</th>
+          <th class="text-end">Очки</th>
+          <th class="text-end">Попытка</th>
           <th></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="j : ${jumps}">
+        <tr th:each="j : ${jumps}" data-row>
+          <td class="text-nowrap" th:text="${#temporals.format(j.jumpTimestamp, 'dd.MM.yyyy')}"></td>
+          <td><a th:href="@{/athletes/{id}(id=${j.athleteId})}" th:text="${j.athleteFullName}" class="fw-semibold"></a></td>
+          <td><a th:href="@{/competitions/{id}(id=${j.competitionId})}" th:text="${j.competitionName}"></a></td>
+          <td><code th:if="${j.hillType}" th:text="${j.hillType}"></code></td>
+          <td th:text="${j.ageCategoryName}"></td>
+          <td class="num num-strong" th:text="${j.distance}"></td>
+          <td class="num" th:text="${j.points}"></td>
+          <td class="num" th:text="${j.attemptNumber}"></td>
           <td>
-            <a th:href="@{/athletes/{id}(id=${j.athleteId})}"
-               th:text="${j.athleteFullName}" class="text-decoration-none"></a>
-          </td>
-          <td>
-            <a th:href="@{/competitions/{id}(id=${j.competitionId})}"
-               th:text="${j.competitionName}" class="text-decoration-none"></a>
-          </td>
-          <td class="fw-medium" th:text="${j.distance}"></td>
-          <td th:text="${j.stylePoints}"></td>
-          <td th:text="${j.windFactor}"></td>
-          <td th:text="${j.attemptNumber}"></td>
-          <td class="text-end">
-            <form th:action="@{/jumps/{id}/delete(id=${j.jumpId})}" method="post">
-              <button class="btn btn-sm btn-outline-danger"
-                      onclick="return confirm('Удалить результат?')">
-                <i class="bi bi-trash"></i>
-              </button>
-            </form>
+            <div class="row-actions">
+              <form th:action="@{/jumps/{id}/delete(id=${j.jumpId})}" method="post">
+                <button type="submit" class="btn btn-sm btn-outline-danger icon-btn" data-confirm="Удалить результат?"
+                        data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
-        <tr th:if="${#lists.isEmpty(jumps)}">
-          <td colspan="7" class="text-center text-muted py-4">Результаты не найдены</td>
+        <th:block th:if="${#lists.isEmpty(jumps)}"><tr th:replace="~{fragments/ui :: emptyRow(9, 'bi-graph-up', 'Результаты не найдены')}"></tr></th:block>
+        <tr th:unless="${#lists.isEmpty(jumps)}" data-filter-empty hidden>
+          <td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><div>Ничего не найдено</div></div></td>
         </tr>
         </tbody>
       </table>

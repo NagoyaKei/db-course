@@ -4,63 +4,37 @@
 
 <div th:fragment="view(person)">
   <img th:if="${person.hasPhoto}" th:src="@{/persons/{id}/photo(id=${person.personId})}"
-       th:alt="${person.fullName}" class="rounded shadow-sm"
-       style="width: 240px; height: 300px; object-fit: cover;">
-  <div th:unless="${person.hasPhoto}"
-       class="rounded bg-light text-muted d-flex align-items-center justify-content-center"
-       style="width: 240px; height: 300px;">
-    <i class="bi bi-person display-1"></i>
+       th:alt="${person.fullName}" class="avatar avatar-lg">
+  <div th:unless="${person.hasPhoto}" class="avatar avatar-lg avatar-placeholder" aria-hidden="true">
+    <i class="bi bi-person"></i>
   </div>
 </div>
 
 <div th:fragment="thumbnail(person)">
   <img th:if="${person.hasPhoto}" th:src="@{/persons/{id}/photo/thumbnail(id=${person.personId})}"
-       th:alt="${person.fullName}" class="rounded" loading="lazy"
-       style="width: 48px; height: 60px; object-fit: cover;">
-  <div th:unless="${person.hasPhoto}"
-       class="rounded bg-light text-muted d-flex align-items-center justify-content-center"
-       style="width: 48px; height: 60px;">
-    <i class="bi bi-person fs-4"></i>
+       th:alt="${person.fullName}" class="avatar avatar-sm" loading="lazy">
+  <div th:unless="${person.hasPhoto}" class="avatar avatar-sm avatar-placeholder" aria-hidden="true">
+    <i class="bi bi-person"></i>
   </div>
 </div>
 
-<div th:fragment="input(person)" class="col-12">
-  <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mb-2">
+<div th:fragment="input(person)">
+  <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mb-3">
     <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
   </div>
-  <label class="form-label">Фото</label>
-  <div class="mb-2">
-    <img id="photoPreview" alt="Фото" class="rounded shadow-sm"
-         style="width: 120px; height: 150px; object-fit: cover;"
+  <label class="dropzone" for="photoInput">
+    <img data-photo-preview alt="Предпросмотр фото" class="dropzone-preview"
          th:classappend="${person.personId == null or !person.hasPhoto} ? 'd-none'"
          th:src="${person.personId != null and person.hasPhoto} ? @{/persons/{id}/photo(id=${person.personId})}">
-  </div>
-  <input id="photoInput" type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp">
-  <div class="form-text">JPEG, PNG или WebP, до 2 МБ</div>
-  <div th:if="${person.personId != null and person.hasPhoto}" class="form-check mt-2">
+    <i class="bi bi-cloud-arrow-up" data-photo-icon th:classappend="${person.personId != null and person.hasPhoto} ? 'd-none'"></i>
+    <span class="fw-medium">Перетащите фото или нажмите</span>
+    <span class="small">JPEG, PNG или WebP, до 2 МБ</span>
+    <input id="photoInput" type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-photo-input>
+  </label>
+  <div th:if="${person.personId != null and person.hasPhoto}" class="form-check mt-3">
     <input class="form-check-input" type="checkbox" name="removePhoto" id="removePhoto" value="true">
     <label class="form-check-label" for="removePhoto">Удалить текущее фото</label>
   </div>
-  <script>
-    (function () {
-      var input = document.getElementById('photoInput');
-      var preview = document.getElementById('photoPreview');
-      var maxBytes = 2 * 1024 * 1024;
-      input.addEventListener('change', function () {
-        var file = input.files[0];
-        if (!file) {
-          return;
-        }
-        if (file.size > maxBytes) {
-          alert('Размер файла больше 2 МБ');
-          input.value = '';
-          return;
-        }
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('d-none');
-      });
-    })();
-  </script>
 </div>
 
 </body>

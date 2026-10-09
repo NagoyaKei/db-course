@@ -6,65 +6,100 @@
 <body>
 <div layout:fragment="content">
 
-  <div class="page-header d-flex justify-content-between align-items-center">
-    <div>
-      <h1 class="h3" th:text="${athlete.fullName}"></h1>
-      <p class="text-muted mb-0" th:text="'Номер: ' + ${athlete.athleteNumber}"></p>
-    </div>
-    <div class="d-flex gap-2">
-      <a th:href="@{/athletes/{id}/edit(id=${athlete.personId})}"
-         class="btn btn-outline-secondary">
-        <i class="bi bi-pencil me-1"></i> Редактировать
-      </a>
-      <form th:action="@{/athletes/{id}/deactivate(id=${athlete.personId})}" method="post">
-        <button class="btn btn-outline-danger"
-                onclick="return confirm('Деактивировать спортсмена?')">
-          <i class="bi bi-person-x me-1"></i> Деактивировать
-        </button>
-      </form>
-    </div>
-  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/athletes}">Спортсмены</a></li>
+      <li class="breadcrumb-item active" aria-current="page" th:text="${athlete.fullName}"></li>
+    </ol>
+  </nav>
 
-  <div class="row g-4">
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-transparent fw-medium">Основные данные</div>
-        <div class="card-body">
-          <div class="d-flex flex-wrap gap-4">
-          <div th:replace="~{fragments/photo :: view(${athlete})}"></div>
-          <dl class="row mb-0 align-content-start" style="flex: 1; min-width: 260px;">
-            <dt class="col-5 text-muted">Дата рождения</dt>
-            <dd class="col-7" th:text="${#temporals.format(athlete.birthDate, 'dd.MM.yyyy')}"></dd>
-            <dt class="col-5 text-muted">Тренер</dt>
-            <dd class="col-7" th:text="${athlete.coachFullName}"></dd>
-            <dt class="col-5 text-muted">Год начала</dt>
-            <dd class="col-7" th:text="${athlete.startYear}"></dd>
-            <dt class="col-5 text-muted">Разряд</dt>
-            <dd class="col-7">
-                            <span th:if="${athlete.rankName}"
-                                  class="badge bg-info text-dark"
-                                  th:text="${athlete.rankName}"></span>
-              <span th:unless="${athlete.rankName}" class="text-muted">не присвоен</span>
-            </dd>
-            <dt class="col-5 text-muted">Статус</dt>
-            <dd class="col-7">
-                            <span th:switch="${athlete.currentStatus}">
-                                <span th:case="'ACTIVE'"    class="badge bg-success">Активен</span>
-                                <span th:case="'INACTIVE'"  class="badge bg-secondary">Неактивен</span>
-                                <span th:case="'SUSPENDED'" class="badge bg-danger">Дисквалифицирован</span>
-                            </span>
-            </dd>
-          </dl>
+  <div class="card mb-4">
+    <div class="card-body p-4">
+      <div class="profile">
+        <div th:replace="~{fragments/photo :: view(${athlete})}"></div>
+        <div>
+          <div class="profile-title">
+            <h1 class="h2" th:text="${athlete.fullName}"></h1>
+            <span th:replace="~{fragments/ui :: athleteStatus(${athlete.currentStatus})}"></span>
+            <span th:replace="~{fragments/ui :: rank(${athlete.rankName})}"></span>
+          </div>
+
+          <div class="facts mb-4">
+            <div>
+              <div class="fact-label">Номер</div>
+              <div class="fact-value"><code th:text="${athlete.athleteNumber}"></code></div>
+            </div>
+            <div>
+              <div class="fact-label">Дата рождения</div>
+              <div class="fact-value" th:text="${#temporals.format(athlete.birthDate, 'dd.MM.yyyy')}"></div>
+            </div>
+            <div>
+              <div class="fact-label">Пол</div>
+              <div class="fact-value" th:text="${athlete.gender == 'M'} ? 'Мужской' : 'Женский'"></div>
+            </div>
+            <div>
+              <div class="fact-label">Год начала занятий</div>
+              <div class="fact-value" th:text="${athlete.startYear}"></div>
+            </div>
+            <div>
+              <div class="fact-label">Тренер</div>
+              <div class="fact-value">
+                <a th:if="${athlete.coachId != null and athlete.coachId != 0}"
+                   th:href="@{/coaches/{id}(id=${athlete.coachId})}" th:text="${athlete.coachFullName}"></a>
+                <span th:unless="${athlete.coachId != null and athlete.coachId != 0}" class="text-secondary">нет</span>
+              </div>
+            </div>
+            <div th:if="${athlete.contactInfo}">
+              <div class="fact-label">Контакт</div>
+              <div class="fact-value" th:text="${athlete.contactInfo}"></div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a th:href="@{/athletes/{id}/edit(id=${athlete.personId})}" class="btn btn-outline-secondary">
+              <i class="bi bi-pencil me-1"></i> Редактировать
+            </a>
+            <form th:action="@{/athletes/{id}/deactivate(id=${athlete.personId})}" method="post">
+              <button type="submit" class="btn btn-outline-danger" data-confirm="Деактивировать спортсмена?">
+                <i class="bi bi-person-x me-1"></i> Деактивировать
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="mt-3">
-    <a th:href="@{/athletes}" class="btn btn-link text-decoration-none px-0">
-      <i class="bi bi-arrow-left me-1"></i> Назад к списку
-    </a>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Результаты прыжков</span>
+      <span class="badge-soft is-secondary" th:text="${#lists.size(jumps)}"></span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Соревнование</th>
+          <th>Трамплин</th>
+          <th class="text-end">Дистанция, м</th>
+          <th class="text-end">Очки</th>
+          <th class="text-end">Попытка</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="j : ${jumps}">
+          <td class="text-nowrap" th:text="${#temporals.format(j.jumpTimestamp, 'dd.MM.yyyy')}"></td>
+          <td><a th:href="@{/competitions/{id}(id=${j.competitionId})}" th:text="${j.competitionName}"></a></td>
+          <td><code th:if="${j.hillType}" th:text="${j.hillType}"></code></td>
+          <td class="num num-strong" th:text="${j.distance}"></td>
+          <td class="num" th:text="${j.points}"></td>
+          <td class="num" th:text="${j.attemptNumber}"></td>
+        </tr>
+        <th:block th:if="${#lists.isEmpty(jumps)}"><tr th:replace="~{fragments/ui :: emptyRow(6, 'bi-graph-up', 'Прыжков пока нет')}"></tr></th:block>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>

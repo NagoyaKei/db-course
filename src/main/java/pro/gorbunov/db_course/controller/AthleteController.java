@@ -1,5 +1,6 @@
 package pro.gorbunov.db_course.controller;
 
+import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,12 +16,11 @@ import pro.gorbunov.db_course.model.Athlete;
 import pro.gorbunov.db_course.model.StoredImage;
 import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CoachRepository;
+import pro.gorbunov.db_course.repository.JumpResultRepository;
 import pro.gorbunov.db_course.repository.PersonImageRepository;
 import pro.gorbunov.db_course.repository.SportRankRepository;
 import pro.gorbunov.db_course.service.ImageUploadReader;
 import pro.gorbunov.db_course.service.PersonPhotoService;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/athletes")
@@ -30,6 +30,7 @@ public class AthleteController {
     private final CoachRepository coachRepository;
     private final SportRankRepository sportRankRepository;
     private final PersonImageRepository personImageRepository;
+    private final JumpResultRepository jumpResultRepository;
     private final ImageUploadReader imageUploadReader;
     private final PersonPhotoService personPhotoService;
 
@@ -37,12 +38,14 @@ public class AthleteController {
                              CoachRepository coachRepository,
                              SportRankRepository sportRankRepository,
                              PersonImageRepository personImageRepository,
+                             JumpResultRepository jumpResultRepository,
                              ImageUploadReader imageUploadReader,
                              PersonPhotoService personPhotoService) {
         this.athleteRepository = athleteRepository;
         this.coachRepository = coachRepository;
         this.sportRankRepository = sportRankRepository;
         this.personImageRepository = personImageRepository;
+        this.jumpResultRepository = jumpResultRepository;
         this.imageUploadReader = imageUploadReader;
         this.personPhotoService = personPhotoService;
     }
@@ -63,6 +66,7 @@ public class AthleteController {
         Athlete athlete = athleteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Спортсмен не найден: " + id));
         model.addAttribute("athlete", athlete);
+        model.addAttribute("jumps", jumpResultRepository.findByAthlete(id));
         return "athletes/detail";
     }
 

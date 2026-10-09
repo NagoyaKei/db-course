@@ -33,6 +33,7 @@ public class AthleteRepository {
         a.setStartYear(rs.getInt("start_year"));
         a.setCurrentStatus(rs.getString("current_status"));
         a.setCoachFullName(rs.getString("coach_full_name"));
+        a.setRankName(rs.getString("rank_name"));
         return a;
     };
 
@@ -42,11 +43,13 @@ public class AthleteRepository {
                 p.birth_date, p.gender, p.contact_info,
                 EXISTS (SELECT 1 FROM person_image pi WHERE pi.person_id = p.id) AS has_photo,
                 a.coach_id, a.number AS athlete_number, a.start_year, a.current_status,
-                cp.last_name || ' ' || cp.first_name AS coach_full_name
+                cp.last_name || ' ' || cp.first_name AS coach_full_name,
+                cr.rank_name
             FROM athlete a
             JOIN person p  ON p.id = a.id
             LEFT JOIN coach c  ON c.id = a.coach_id
             LEFT JOIN person cp ON cp.id = c.id
+            LEFT JOIN v_athlete_current_rank cr ON cr.athlete_id = a.id
             """;
 
     public List<Athlete> findAll() {

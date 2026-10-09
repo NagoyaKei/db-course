@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Рекорды</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3">Рекорды</h1>
+    <p class="text-secondary mb-0">Лучший результат клуба в каждой возрастной категории, по полу и трамплину</p>
+  </div>
+
+  <div th:if="${selectedHill != null}">
+    <div class="card mb-4">
+      <div class="card-toolbar">
+        <ul class="nav nav-pills" aria-label="Трамплин">
+          <li class="nav-item" th:each="h : ${hills}">
+            <a class="nav-link" th:href="@{/records(hill=${h.type})}"
+               th:classappend="${h.type == selectedHill.type} ? 'active'" th:text="${h.name}"></a>
+          </li>
+        </ul>
+        <div class="row-count">K-точка <span class="fw-semibold" th:text="${selectedHill.kpoint}"></span> м</div>
+      </div>
+      <div class="card-body" th:if="${!#lists.isEmpty(records)}">
+        <div class="chart-box">
+          <canvas data-chart th:attr="data-chart=${chart}" role="img"
+                  aria-label="Рекорды по возрастным категориям, мужчины и женщины"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+          <tr>
+            <th>Категория</th>
+            <th>Пол</th>
+            <th>Спортсмен</th>
+            <th class="text-end">Дистанция, м</th>
+            <th>Дата</th>
+            <th>Соревнование</th>
+            <th>Рекорд</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="r : ${records}">
+            <td th:text="${r.ageCategoryName()}"></td>
+            <td th:text="${r.gender() == 'M'} ? 'Мужчины' : 'Женщины'"></td>
+            <td><a th:href="@{/athletes/{id}(id=${r.athleteId()})}" th:text="${r.athleteName()}" class="fw-semibold"></a></td>
+            <td class="num num-strong" th:text="${r.distance()}"></td>
+            <td class="text-nowrap" th:text="${#temporals.format(r.jumpDate(), 'dd.MM.yyyy')}"></td>
+            <td th:text="${r.competitionName()}"></td>
+            <td><span th:replace="~{fragments/ui :: recordType(${r.recordType()})}"></span></td>
+          </tr>
+          <th:block th:if="${#lists.isEmpty(records)}"><tr th:replace="~{fragments/ui :: emptyRow(7, 'bi-bar-chart-line', 'Прыжков на этом трамплине пока нет')}"></tr></th:block>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state card" th:if="${selectedHill == null}">
+    <i class="bi bi-triangle"></i>
+    <div>Сначала добавьте трамплин в справочнике</div>
+  </div>
+
+  <th:block layout:fragment="scripts">
+    <script th:src="@{/vendor/chartjs/chart.umd.js}"></script>
+    <script th:src="@{/js/charts.js}"></script>
+  </th:block>
+
+</div>
+</body>
+</html>
