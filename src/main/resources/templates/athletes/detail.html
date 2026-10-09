@@ -65,6 +65,54 @@
     </div>
   </div>
 
+  <div class="card mb-4" th:if="${chart != null}">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Динамика результатов</span>
+      <span th:if="${forecast != null}" class="text-secondary small">
+        Прогноз через <span th:text="${horizonDays}"></span> дн.:
+        <span class="fw-semibold" th:text="${forecast.forecastDistance} + ' м'"></span>,
+        тренд <span th:text="${forecast.trendPerYear} + ' м/год'"></span>,
+        прыжков <span th:text="${forecast.jumpsUsed}"></span>, R&sup2; <span th:text="${forecast.rSquared}"></span>
+      </span>
+    </div>
+    <div class="card-body">
+      <div class="chart-box">
+        <canvas data-chart th:attr="data-chart=${chart}" role="img" aria-label="Динамика результатов и прогноз"></canvas>
+      </div>
+    </div>
+    <div th:replace="~{fragments/legend :: forecast}"></div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Физиологические замеры</span>
+      <span class="badge-soft is-secondary" th:text="${#lists.size(measures)}"></span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+          <th>Дата</th>
+          <th class="text-end">Рост, см</th>
+          <th class="text-end">Вес, кг</th>
+          <th class="text-end">VO2 max</th>
+          <th class="text-end">Пульс покоя</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${measures}">
+          <td class="text-nowrap" th:text="${#temporals.format(m.measureDate, 'dd.MM.yyyy')}"></td>
+          <td class="num" th:text="${m.height}"></td>
+          <td class="num" th:text="${m.weight}"></td>
+          <td class="num" th:text="${m.vo2Max}"></td>
+          <td class="num" th:text="${m.restingHr}"></td>
+        </tr>
+        <th:block th:if="${#lists.isEmpty(measures)}"><tr th:replace="~{fragments/ui :: emptyRow(5, 'bi-heart-pulse', 'Замеров пока нет')}"></tr></th:block>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Результаты прыжков</span>
@@ -96,6 +144,11 @@
       </table>
     </div>
   </div>
+
+  <th:block layout:fragment="scripts">
+    <script th:src="@{/vendor/chartjs/chart.umd.js}"></script>
+    <script th:src="@{/js/charts.js}"></script>
+  </th:block>
 
 </div>
 </body>

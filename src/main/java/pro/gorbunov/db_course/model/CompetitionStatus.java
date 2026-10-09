@@ -14,4 +14,8 @@ public enum CompetitionStatus implements Badge {
     private final String label;
     private final String tone;
     private final String icon;
+
+    public boolean isAcceptingResults() {
+        return this == ACTIVE || this == FINISHED;
+    }
 }

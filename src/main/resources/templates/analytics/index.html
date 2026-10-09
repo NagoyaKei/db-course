@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Аналитика</title></head>
+<body>
+<div layout:fragment="content">
+
+  <div class="page-header">
+    <h1 class="h3">Аналитика</h1>
+    <p class="text-secondary mb-0">Прогноз результатов, влияние роста и веса, распределение спортсменов по разрядам</p>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Прогноз результатов через <span th:text="${horizonDays}"></span> дней</div>
+    <div class="card-body" th:if="${!#lists.isEmpty(forecasts)}">
+      <div class="chart-box">
+        <canvas data-chart th:attr="data-chart=${trendChart}" role="img" aria-label="Годовой тренд результата по спортсменам"></canvas>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+          <th>Спортсмен</th>
+          <th>Разряд</th>
+          <th class="text-end">Прыжков</th>
+          <th class="text-end">Тренд, м/год</th>
+          <th class="text-end">Прогноз, м</th>
+          <th class="text-end">R&sup2;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="f : ${forecasts}">
+          <td><a th:href="@{/athletes/{id}(id=${f.athleteId})}" th:text="${f.athleteName}" class="fw-semibold"></a></td>
+          <td><span th:replace="~{fragments/ui :: rank(${f.rankName})}"></span></td>
+          <td class="num" th:text="${f.jumpsUsed}"></td>
+          <td class="num" th:text="${f.trendPerYear}"></td>
+          <td class="num num-strong" th:text="${f.forecastDistance}"></td>
+          <td class="num" th:text="${f.rSquared}"></td>
+        </tr>
+        <th:block th:if="${#lists.isEmpty(forecasts)}"><tr th:replace="~{fragments/ui :: emptyRow(6, 'bi-graph-up', 'Для прогноза нужно не меньше двух прыжков')}"></tr></th:block>
+        </tbody>
+      </table>
+    </div>
+    <div th:replace="~{fragments/legend :: forecast}"></div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">Корреляция роста и веса с дальностью</div>
+        <div class="card-body" th:if="${!#lists.isEmpty(correlations)}">
+          <div class="chart-box">
+            <canvas data-chart th:attr="data-chart=${correlationChart}" role="img" aria-label="Корреляция роста и веса с дальностью по трамплинам"></canvas>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+            <tr>
+              <th>Трамплин</th>
+              <th class="text-end">Прыжков</th>
+              <th class="text-end">Рост</th>
+              <th class="text-end">Вес</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${correlations}">
+              <td><code th:text="${c.hillType}"></code></td>
+              <td class="num" th:text="${c.jumpsCount}"></td>
+              <td class="num" th:text="${c.heightCorrelation}"></td>
+              <td class="num" th:text="${c.weightCorrelation}"></td>
+            </tr>
+            <th:block th:if="${#lists.isEmpty(correlations)}"><tr th:replace="~{fragments/ui :: emptyRow(4, 'bi-bar-chart', 'Нет прыжков с замерами')}"></tr></th:block>
+            </tbody>
+          </table>
+        </div>
+        <div th:replace="~{fragments/legend :: correlation}"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">Спортсмены по разрядам</div>
+        <div class="card-body" th:if="${!#lists.isEmpty(distribution)}">
+          <div class="chart-box">
+            <canvas data-chart th:attr="data-chart=${rankChart}" role="img" aria-label="Число спортсменов по текущему разряду"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <th:block layout:fragment="scripts">
+    <script th:src="@{/vendor/chartjs/chart.umd.js}"></script>
+    <script th:src="@{/js/charts.js}"></script>
+  </th:block>
+
+</div>
+</body>
+</html>

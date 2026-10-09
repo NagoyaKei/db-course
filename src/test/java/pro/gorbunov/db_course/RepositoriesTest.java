@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import pro.gorbunov.db_course.model.Athlete;
+import pro.gorbunov.db_course.model.RankCount;
 import pro.gorbunov.db_course.model.AthleteStatus;
 import pro.gorbunov.db_course.model.Coach;
 import pro.gorbunov.db_course.model.Competition;
@@ -23,10 +24,12 @@ import pro.gorbunov.db_course.model.Hill;
 import pro.gorbunov.db_course.model.JumpResult;
 import pro.gorbunov.db_course.model.Person;
 import pro.gorbunov.db_course.model.PhysiologicalRecord;
+import pro.gorbunov.db_course.model.ProtocolRow;
 import pro.gorbunov.db_course.model.Record;
 import pro.gorbunov.db_course.model.RecordType;
 import pro.gorbunov.db_course.model.SportRank;
 import pro.gorbunov.db_course.model.StoredImage;
+import pro.gorbunov.db_course.repository.AnalyticsRepository;
 import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CoachRepository;
 import pro.gorbunov.db_course.repository.CompetitionRepository;
@@ -34,6 +37,7 @@ import pro.gorbunov.db_course.repository.HillRepository;
 import pro.gorbunov.db_course.repository.JumpResultRepository;
 import pro.gorbunov.db_course.repository.PersonImageRepository;
 import pro.gorbunov.db_course.repository.PhysiologicalRecordRepository;
+import pro.gorbunov.db_course.repository.ProtocolRepository;
 import pro.gorbunov.db_course.repository.RecordRepository;
 import pro.gorbunov.db_course.repository.SportRankRepository;
 
@@ -62,6 +66,10 @@ class RepositoriesTest {
     private CoachRepository coachRepository;
     @Autowired
     private PersonImageRepository personImageRepository;
+    @Autowired
+    private ProtocolRepository protocolRepository;
+    @Autowired
+    private AnalyticsRepository analyticsRepository;
 
     @Test
     void hillIsSavedUpdatedAndDeleted() {
@@ -234,6 +242,31 @@ class RepositoriesTest {
 
         personImageRepository.delete(personId);
         assertFalse(personImageRepository.exists(personId));
+    }
+
+    @Test
+    void protocolRanksAthletesByPointsAfterBatchRegistration() {
+        String json = "[{\"athlete_id\": 3, \"distance\": 120.0, \"style_points\": 58.0, \"attempt_number\": 3}]";
+
+        protocolRepository.register(SEEDED_COMPETITION_ID, json);
+
+        List<ProtocolRow> protocol = protocolRepository.findByCompetition(SEEDED_COMPETITION_ID);
+        assertEquals(1L, protocol.get(0).place());
+        assertEquals(SEEDED_ATHLETE_ID, protocol.get(0).athleteId());
+        assertEquals(protocol.stream().sorted((a, b) -> b.totalPoints().compareTo(a.totalPoints())).toList(), protocol);
+    }
+
+    @Test
+    void everyAthleteIsCountedInRankDistribution() {
+        long counted = analyticsRepository.findRankDistribution().stream().mapToLong(RankCount::athletes).sum();
+
+        assertEquals(athleteRepository.findAll().size(), counted);
+    }
+
+    @Test
+    void correlationsAreWithinBounds() {
+        assertTrue(analyticsRepository.findCorrelations().stream()
+                .allMatch(row -> row.heightCorrelation().abs().doubleValue() <= 1 && row.weightCorrelation().abs().doubleValue() <= 1));
     }
 
     private JumpResult newJump(BigDecimal distance) {

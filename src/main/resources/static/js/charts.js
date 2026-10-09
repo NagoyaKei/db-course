@@ -20,15 +20,14 @@
     }
 
     function buildConfig(spec, colors) {
+        var isLine = spec.type === 'line';
         var datasets = spec.datasets.map(function (dataset, index) {
-            return {
-                label: dataset.label,
-                data: dataset.data,
-                backgroundColor: colors.series[index % SERIES_COUNT],
-                borderColor: colors.series[index % SERIES_COUNT],
-                borderRadius: 6,
-                maxBarThickness: 48
-            };
+            var color = colors.series[index % SERIES_COUNT];
+            var base = {label: dataset.label, data: dataset.data, backgroundColor: color, borderColor: color};
+            if (isLine) {
+                return Object.assign(base, {tension: 0.25, spanGaps: true, borderWidth: 2, pointRadius: 3, borderDash: dataset.dashed ? [6, 4] : []});
+            }
+            return Object.assign(base, {borderRadius: 6, maxBarThickness: 48});
         });
         return {
             type: spec.type,
@@ -43,7 +42,8 @@
                         callbacks: {
                             label: function (context) {
                                 var value = context.parsed.y;
-                                return value === null ? null : context.dataset.label + ': ' + value + ' м';
+                                var unit = spec.unit === undefined ? 'м' : spec.unit;
+                                return value === null ? null : context.dataset.label + ': ' + value + (unit ? ' ' + unit : '');
                             }
                         }
                     }
@@ -51,7 +51,7 @@
                 scales: {
                     x: {ticks: {color: colors.text}, grid: {display: false}},
                     y: {
-                        beginAtZero: true,
+                        beginAtZero: spec.type !== 'line',
                         ticks: {color: colors.text},
                         grid: {color: colors.grid},
                         title: {display: Boolean(spec.yLabel), text: spec.yLabel, color: colors.text}

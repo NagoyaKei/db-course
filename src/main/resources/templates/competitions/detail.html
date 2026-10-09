@@ -47,9 +47,83 @@
     </div>
   </div>
 
+  <div class="card mb-4" th:if="${!#lists.isEmpty(protocol)}">
+    <div class="card-header">Протокол соревнования</div>
+    <div class="card-body">
+      <div class="chart-box">
+        <canvas data-chart th:attr="data-chart=${chart}" role="img" aria-label="Сумма очков по спортсменам"></canvas>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+          <th>Место</th>
+          <th>Спортсмен</th>
+          <th class="text-end">Прыжков</th>
+          <th class="text-end">Лучшая, м</th>
+          <th class="text-end">Сумма очков</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${protocol}">
+          <td class="num num-strong" th:text="${r.place}"></td>
+          <td><a th:href="@{/athletes/{id}(id=${r.athleteId})}" th:text="${r.athleteName}" class="fw-semibold"></a></td>
+          <td class="num" th:text="${r.jumpsCount}"></td>
+          <td class="num" th:text="${r.bestDistance}"></td>
+          <td class="num num-strong" th:text="${r.totalPoints}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mb-4" th:if="${resultsForm != null}">
+    <div class="card-header">Внести результаты</div>
+    <form th:action="@{/competitions/{id}/results(id=${competition.id})}" th:object="${resultsForm}" method="post">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+          <tr>
+            <th>Спортсмен</th>
+            <th>Попытка</th>
+            <th>Дистанция, м</th>
+            <th>Стиль</th>
+            <th>Ветер</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="entry, stat : ${resultsForm.entries}">
+            <td>
+              <select th:field="*{entries[__${stat.index}__].athleteId}" class="form-select">
+                <option value="">- выберите -</option>
+                <option th:each="a : ${athletes}" th:value="${a.personId}" th:text="${a.fullName}"></option>
+              </select>
+            </td>
+            <td>
+              <select th:field="*{entries[__${stat.index}__].attemptNumber}" class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </td>
+            <td><input th:field="*{entries[__${stat.index}__].distance}" type="number" step="0.01" class="form-control"></td>
+            <td><input th:field="*{entries[__${stat.index}__].stylePoints}" type="number" step="0.1" class="form-control"></td>
+            <td><input th:field="*{entries[__${stat.index}__].windFactor}" type="number" step="0.01" class="form-control"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-body">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Сохранить результаты</button>
+        <span class="text-secondary ms-2">Пустые строки пропускаются; сохраняются все строки или ни одной</span>
+      </div>
+    </form>
+  </div>
+
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <span>Протокол результатов</span>
+      <span>Все попытки</span>
       <span class="badge-soft is-secondary" th:text="${#lists.size(results)}"></span>
     </div>
     <div class="table-responsive">
@@ -80,6 +154,11 @@
       </table>
     </div>
   </div>
+
+  <th:block layout:fragment="scripts">
+    <script th:src="@{/vendor/chartjs/chart.umd.js}"></script>
+    <script th:src="@{/js/charts.js}"></script>
+  </th:block>
 
 </div>
 </body>
