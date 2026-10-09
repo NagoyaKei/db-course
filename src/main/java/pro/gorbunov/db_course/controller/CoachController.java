@@ -1,5 +1,7 @@
 package pro.gorbunov.db_course.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,18 +13,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pro.gorbunov.db_course.exception.NotFoundException;
 import pro.gorbunov.db_course.model.Coach;
-import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.model.StoredImage;
+import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CoachRepository;
 import pro.gorbunov.db_course.repository.PersonImageRepository;
 import pro.gorbunov.db_course.service.ImageUploadReader;
 import pro.gorbunov.db_course.service.PersonPhotoService;
 
-import javax.validation.Valid;
-
 @Controller
 @RequestMapping("/coaches")
+@RequiredArgsConstructor
 public class CoachController {
 
     private final CoachRepository coachRepository;
@@ -30,18 +32,6 @@ public class CoachController {
     private final PersonImageRepository personImageRepository;
     private final ImageUploadReader imageUploadReader;
     private final PersonPhotoService personPhotoService;
-
-    public CoachController(CoachRepository coachRepository,
-                           AthleteRepository athleteRepository,
-                           PersonImageRepository personImageRepository,
-                           ImageUploadReader imageUploadReader,
-                           PersonPhotoService personPhotoService) {
-        this.coachRepository = coachRepository;
-        this.athleteRepository = athleteRepository;
-        this.personImageRepository = personImageRepository;
-        this.imageUploadReader = imageUploadReader;
-        this.personPhotoService = personPhotoService;
-    }
 
     @GetMapping
     public String list(Model model) {
@@ -52,7 +42,7 @@ public class CoachController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("coach", coachRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Тренер не найден: " + id)));
+                .orElseThrow(NotFoundException::new));
         model.addAttribute("athletes", athleteRepository.findByCoach(id));
         return "coaches/detail";
     }
@@ -79,7 +69,7 @@ public class CoachController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("coach", coachRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Тренер не найден: " + id)));
+                .orElseThrow(NotFoundException::new));
         return "coaches/form";
     }
 

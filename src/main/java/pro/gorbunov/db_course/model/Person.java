@@ -1,17 +1,13 @@
 package pro.gorbunov.db_course.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
 public class Person {
     private Long personId;
 
@@ -30,9 +26,8 @@ public class Person {
     @Past(message = "Дата рождения должна быть в прошлом")
     private LocalDate birthDate;
 
-    @NotBlank
-    @Pattern(regexp = "^[MF]$", message = "Пол: M или F")
-    private String gender;
+    @NotNull
+    private Gender gender;
 
     @Size(max = 200)
     private String contactInfo;

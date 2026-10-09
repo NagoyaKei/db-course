@@ -14,38 +14,13 @@
   <form th:action="${hill.id == null} ? @{/hills} : @{/hills/{id}/edit(id=${hill.id})}"
         th:object="${hill}" method="post" class="form-card">
 
-    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-      <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
-    </div>
-
     <div class="card">
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-5">
-            <label class="form-label" for="type">Код <span class="required">*</span></label>
-            <input th:field="*{type}" type="text" class="form-control" maxlength="20" placeholder="K-90"
-                   th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{type}"></div>
-            <div class="form-text">Латинские заглавные буквы, цифры, - и _</div>
-          </div>
-          <div class="col-md-7">
-            <label class="form-label" for="name">Название <span class="required">*</span></label>
-            <input th:field="*{name}" type="text" class="form-control" maxlength="100"
-                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{name}"></div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="kpoint">K-точка, м <span class="required">*</span></label>
-            <input th:field="*{kpoint}" type="number" min="1" class="form-control"
-                   th:classappend="${#fields.hasErrors('kpoint')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{kpoint}"></div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="meterValue">Очки за метр <span class="required">*</span></label>
-            <input th:field="*{meterValue}" type="number" min="0.01" step="0.01" class="form-control"
-                   th:classappend="${#fields.hasErrors('meterValue')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{meterValue}"></div>
-          </div>
+          <div class="col-md-5" th:insert="~{fragments/form :: textField('type', 'Код', true, 'text', 'K-90', null)}"></div>
+          <div class="col-md-7" th:insert="~{fragments/form :: textField('name', 'Название', true, 'text', null, null)}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: textField('kpoint', 'K-точка, м', true, 'number', null, null)}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: textField('meterValue', 'Очки за метр', true, 'number', null, '0.01')}"></div>
         </div>
       </div>
     </div>

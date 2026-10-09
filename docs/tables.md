@@ -5,7 +5,7 @@
 Соглашения:
 - Колонки без префикса имени таблицы: PK везде `id`, а не `rank_id`, `person_id` и т.п. Внешние ключи называются по роли: `athlete_id`, `rank_id`, `hill_id`.
 - Справочники: `type` - код латиницей в UPPER_CASE (константа для кода), `name` - название на русском.
-- Константы в CHECK (`status`, `level`, `type`, `current_status`) тоже латиницей в UPPER_CASE.
+- Константы в CHECK (`status`, `level`, `type`, `current_status`, `gender`) тоже латиницей в UPPER_CASE; в Java им соответствуют enum в `model` (`CompetitionStatus`, `CompetitionLevel`, `AthleteStatus`, `RecordType`, `Gender`), совпадение проверяет тест `EnumsMatchDatabaseTest`.
 
 ## Справочники
 

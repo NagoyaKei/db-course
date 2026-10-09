@@ -25,9 +25,7 @@
       </div>
       <select name="status" class="form-select w-auto" aria-label="Статус" onchange="this.form.submit()">
         <option value="" th:selected="${selectedStatus == null}">Все статусы</option>
-        <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">Активен</option>
-        <option value="INACTIVE" th:selected="${selectedStatus == 'INACTIVE'}">Неактивен</option>
-        <option value="SUSPENDED" th:selected="${selectedStatus == 'SUSPENDED'}">Дисквалифицирован</option>
+        <option th:each="e : ${enums.athleteStatus}" th:value="${e}" th:text="${e.label}" th:selected="${e == selectedStatus}"></option>
       </select>
       <div class="row-count">Найдено: <span id="athletesCount" th:text="${#lists.size(athletes)}"></span></div>
     </form>
@@ -58,7 +56,7 @@
           <td><code th:text="${a.athleteNumber}"></code></td>
           <td th:text="${a.coachFullName}"></td>
           <td><span th:replace="~{fragments/ui :: rank(${a.rankName})}"></span></td>
-          <td><span th:replace="~{fragments/ui :: athleteStatus(${a.currentStatus})}"></span></td>
+          <td><span th:replace="~{fragments/ui :: badge(${a.currentStatus})}"></span></td>
           <td>
             <div class="row-actions">
               <a th:href="@{/athletes/{id}/edit(id=${a.personId})}" class="btn btn-sm btn-outline-secondary icon-btn"

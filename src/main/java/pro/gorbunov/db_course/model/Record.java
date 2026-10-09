@@ -1,27 +1,23 @@
 package pro.gorbunov.db_course.model;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
 @Data
-@NoArgsConstructor
 public class Record {
+    @Id
+    @Column("id")
     private Long recordId;
 
     @NotNull
     private Long jumpId;
 
-    @NotBlank
-    @Pattern(regexp = "^(CLUB|REGIONAL|NATIONAL|INTERNATIONAL)$")
-    private String recordType;
+    @NotNull
+    @Column("type")
+    private RecordType recordType;
 
-    private LocalDate verificationDate;
-
-    private LocalDate jumpDate;
-    private BigDecimal distance;
+    private LocalDate verificationDate = LocalDate.now();
 }

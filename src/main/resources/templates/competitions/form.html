@@ -18,37 +18,10 @@
       <div class="card-body">
         <div class="section-title">Основное</div>
         <div class="row g-3">
-          <div class="col-12">
-            <label class="form-label" for="name">Название <span class="required">*</span></label>
-            <input th:field="*{name}" type="text" class="form-control"
-                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{name}"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label" for="competitionDate">Дата <span class="required">*</span></label>
-            <input type="date" id="competitionDate" name="competitionDate" class="form-control"
-                   th:value="${#temporals.format(competition.competitionDate, 'yyyy-MM-dd')}"
-                   th:classappend="${#fields.hasErrors('competitionDate')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{competitionDate}"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label" for="level">Уровень <span class="required">*</span></label>
-            <select th:field="*{level}" class="form-select">
-              <option value="LOCAL">Местный</option>
-              <option value="REGIONAL">Региональный</option>
-              <option value="NATIONAL">Национальный</option>
-              <option value="INTERNATIONAL">Международный</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label" for="status">Статус <span class="required">*</span></label>
-            <select th:field="*{status}" class="form-select">
-              <option value="PLANNED">Запланировано</option>
-              <option value="ACTIVE">Идет</option>
-              <option value="FINISHED">Завершено</option>
-              <option value="CANCELLED">Отменено</option>
-            </select>
-          </div>
+          <div class="col-12" th:insert="~{fragments/form :: textField('name', 'Название', true, 'text', null, null)}"></div>
+          <div class="col-md-4" th:insert="~{fragments/form :: dateField('competitionDate', 'Дата', true)}"></div>
+          <div class="col-md-4" th:insert="~{fragments/form :: enumField('level', 'Уровень', true, ${enums.competitionLevel})}"></div>
+          <div class="col-md-4" th:insert="~{fragments/form :: enumField('status', 'Статус', true, ${enums.competitionStatus})}"></div>
         </div>
       </div>
     </div>
@@ -57,21 +30,9 @@
       <div class="card-body">
         <div class="section-title">Место проведения</div>
         <div class="row g-3">
-          <div class="col-12">
-            <label class="form-label" for="location">Город и объект</label>
-            <input th:field="*{location}" type="text" class="form-control" placeholder="Пермь, трамплин К-90">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="hillId">Трамплин</label>
-            <select th:field="*{hillId}" class="form-select">
-              <option value="">- не указан -</option>
-              <option th:each="h : ${hills}" th:value="${h.id}" th:text="${h.name}"></option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="maxParticipants">Максимум участников</label>
-            <input th:field="*{maxParticipants}" type="number" class="form-control" min="1">
-          </div>
+          <div class="col-12" th:insert="~{fragments/form :: textField('location', 'Город и объект', false, 'text', 'Пермь, трамплин К-90', null)}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: entityField('hillId', 'Трамплин', false, ${hills}, 'id', 'name', '- не указан -')}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: textField('maxParticipants', 'Максимум участников', false, 'number', null, null)}"></div>
         </div>
       </div>
     </div>

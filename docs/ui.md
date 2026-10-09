@@ -21,13 +21,14 @@ Bootstrap 5.3 без сборки, поверх него свой слой ст�
 1. Шаблон с `layout:decorate="~{layout}"` и содержимым в `layout:fragment="content"`.
 2. Заголовок страницы: `div.page-header` с `h1.h3` и подзаголовком `text-secondary`.
 3. Список: `div.card` с `div.card-toolbar` (поиск через `data-table-filter="#таблица"` и `data-table-count="#счетчик"`), таблица `table table-hover align-middle`, строки с атрибутом `data-row`, строка пустого результата `data-filter-empty hidden`. Пустой список: `<th:block th:if="${#lists.isEmpty(x)}"><tr th:replace="~{fragments/ui :: emptyRow(колонок, 'bi-иконка', 'Текст')}"></tr></th:block>` (именно через `th:block`, иначе `th:replace` сработает раньше `th:if`).
-4. Статусы и метки только фрагментами: `fragments/ui :: athleteStatus(...)`, `competitionLevel(...)`, `competitionStatus(...)`, `rank(...)`. Новый статус добавлять туда, а не в шаблон страницы.
-5. Фото человека: `fragments/photo :: thumbnail(person)` в списках, `view(person)` на карточке, `input(person)` в форме.
-6. Удаление и опасные действия: кнопка `type="submit"` с `data-confirm="Текст вопроса"` внутри `form`, модальное окно подтверждения общее в `layout.html`.
-7. Сообщения пользователю: флеш-атрибуты `success` и `error` показываются всплывающими уведомлениями.
-8. Формы: секции в `card`, заголовок секции `div.section-title`, обязательное поле помечать `<span class="required">*</span>`, панель кнопок `div.form-actions`. Поля дат `type="date"` заполнять значением в формате `yyyy-MM-dd`.
-9. Числа дистанций и очков в таблицах: класс `num` (выравнивание вправо, цифры одной ширины), главное значение `num-strong`.
-10. Активный пункт меню определяется по адресу страницы (`currentPath` из `NavigationAdvice`): новый раздел добавить в `layout.html` и использовать общий префикс адреса.
+4. Статусы, уровни, пол и тип рекорда - enum в `model` (`AthleteStatus`, `CompetitionStatus`, `CompetitionLevel`, `RecordType`, `Gender`) с полями `label` (подпись по-русски), у первых четырех еще `tone` и `icon` (интерфейс `Badge`). Бейдж выводится одним фрагментом `fragments/ui :: badge(${значение})`, опции списков строятся циклом по `${enums.athleteStatus}`, `${enums.competitionLevel}` и т.д. (`EnumsAdvice`). Новое значение добавлять в enum и в `CHECK` в БД: тест `EnumsMatchDatabaseTest` проверит, что они совпадают. В БД и в запросах хранится `name()`, перевод через `DbEnum` в репозиториях.
+5. Поля форм - фрагменты `fragments/form.html`: `textField` (в том числе числа через тип `number` и шаг), `dateField` (значение в формате `yyyy-MM-dd`), `enumField`, `entityField` (список из сущностей по названиям свойств). Подпись, звездочка обязательности, класс ошибки и сообщение у поля выводятся внутри фрагмента. Блок личных данных спортсмена и тренера - `fragments/person :: fields`. Имена фрагментов не должны совпадать с именами HTML-тегов (`input`, `label`, `select`): Thymeleaf тогда подхватывает и сами теги из файла.
+6. Фото человека: `fragments/photo :: thumbnail(person)` в списках, `view(person)` на карточке, `upload(person)` в форме.
+7. Удаление и опасные действия: кнопка `type="submit"` с `data-confirm="Текст вопроса"` внутри `form`, модальное окно подтверждения общее в `layout.html`.
+8. Сообщения пользователю: флеш-атрибуты `success` и `error` показываются всплывающими уведомлениями.
+9. Формы: секции в `card`, заголовок секции `div.section-title`, обязательное поле помечать `<span class="required">*</span>`, панель кнопок `div.form-actions`. Поля дат `type="date"` заполнять значением в формате `yyyy-MM-dd`.
+10. Числа дистанций и очков в таблицах: класс `num` (выравнивание вправо, цифры одной ширины), главное значение `num-strong`.
+11. Активный пункт меню определяется по адресу страницы (`currentPath` из `NavigationAdvice`): новый раздел добавить в `layout.html` и использовать общий префикс адреса.
 
 ## Графики
 1. Контроллер собирает описание графика в JSON (`ObjectMapper`): `type` (`bar`, `line`), `labels`, `datasets` (`label`, `data`), `yLabel`; пример в `AgeRecordController.buildChart`.

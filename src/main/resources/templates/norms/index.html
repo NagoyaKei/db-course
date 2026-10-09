@@ -20,13 +20,9 @@
         </li>
       </ul>
       <ul class="nav nav-pills" aria-label="Пол">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/norms(hill=${selectedHill.type}, gender='M')}"
-             th:classappend="${selectedGender == 'M'} ? 'active'"><i class="bi bi-gender-male me-1"></i>Мужчины</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/norms(hill=${selectedHill.type}, gender='F')}"
-             th:classappend="${selectedGender == 'F'} ? 'active'"><i class="bi bi-gender-female me-1"></i>Женщины</a>
+        <li class="nav-item" th:each="g : ${enums.gender}">
+          <a class="nav-link" th:href="@{/norms(hill=${selectedHill.type}, gender=${g})}"
+             th:classappend="${g == selectedGender} ? 'active'"><i class="bi me-1" th:classappend="${g.icon}"></i><span th:text="${g.groupLabel}"></span></a>
         </li>
       </ul>
       <div class="row-count">

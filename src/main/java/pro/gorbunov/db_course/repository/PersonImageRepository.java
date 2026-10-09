@@ -1,12 +1,12 @@
 package pro.gorbunov.db_course.repository;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import pro.gorbunov.db_course.model.StoredImage;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,8 +14,7 @@ public class PersonImageRepository {
 
     private final JdbcTemplate jdbc;
 
-    private final RowMapper<StoredImage> rowMapper = (rs, rowNum) ->
-            new StoredImage(rs.getString("content_type"), rs.getBytes("data"));
+    private final RowMapper<StoredImage> rowMapper = new DataClassRowMapper<>(StoredImage.class);
 
     public Optional<StoredImage> find(Long personId) {
         return jdbc.query("SELECT content_type, data FROM person_image WHERE person_id = ?", rowMapper, personId)

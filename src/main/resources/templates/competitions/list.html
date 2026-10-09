@@ -46,8 +46,8 @@
           <td class="text-nowrap" th:text="${#temporals.format(c.competitionDate, 'dd.MM.yyyy')}"></td>
           <td th:text="${c.location}"></td>
           <td><code th:if="${c.hillName}" th:text="${c.hillName}"></code></td>
-          <td><span th:replace="~{fragments/ui :: competitionLevel(${c.level})}"></span></td>
-          <td><span th:replace="~{fragments/ui :: competitionStatus(${c.status})}"></span></td>
+          <td><span th:replace="~{fragments/ui :: badge(${c.level})}"></span></td>
+          <td><span th:replace="~{fragments/ui :: badge(${c.status})}"></span></td>
           <td class="num"
               th:text="${c.participantsCount} + (${c.maxParticipants} != null ? ' / ' + ${c.maxParticipants} : '')"></td>
           <td>

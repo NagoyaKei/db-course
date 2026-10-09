@@ -1,5 +1,7 @@
 package pro.gorbunov.db_course.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,23 +16,14 @@ import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CompetitionRepository;
 import pro.gorbunov.db_course.repository.JumpResultRepository;
 
-import javax.validation.Valid;
-
 @Controller
 @RequestMapping("/jumps")
+@RequiredArgsConstructor
 public class JumpResultController {
 
     private final JumpResultRepository jumpResultRepository;
     private final AthleteRepository athleteRepository;
     private final CompetitionRepository competitionRepository;
-
-    public JumpResultController(JumpResultRepository jumpResultRepository,
-                                AthleteRepository athleteRepository,
-                                CompetitionRepository competitionRepository) {
-        this.jumpResultRepository = jumpResultRepository;
-        this.athleteRepository = athleteRepository;
-        this.competitionRepository = competitionRepository;
-    }
 
     @GetMapping
     public String list(Model model) {
@@ -56,14 +49,14 @@ public class JumpResultController {
             model.addAttribute("competitions", competitionRepository.findAll());
             return "jumps/form";
         }
-        jumpResultRepository.create(jump);
+        jumpResultRepository.save(jump);
         redirect.addFlashAttribute("success", "Результат прыжка зарегистрирован");
         return "redirect:/jumps";
     }
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirect) {
-        jumpResultRepository.delete(id);
+        jumpResultRepository.deleteById(id);
         redirect.addFlashAttribute("success", "Результат удален");
         return "redirect:/jumps";
     }

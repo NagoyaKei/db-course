@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<body>
+
+<th:block th:fragment="fieldLabel(name, label, required)">
+  <label class="form-label" th:for="${name}"><th:block th:text="${label}"></th:block> <span class="required" th:if="${required}">*</span></label>
+</th:block>
+
+<th:block th:fragment="textField(name, label, required, type, placeholder, step)">
+  <th:block th:replace="~{fragments/form :: fieldLabel(${name}, ${label}, ${required})}"></th:block>
+  <input th:field="*{__${name}__}" th:type="${type}" th:placeholder="${placeholder}" th:step="${step}" class="form-control"
+         th:classappend="${#fields.hasErrors(name)} ? 'is-invalid'">
+  <div class="invalid-feedback" th:errors="*{__${name}__}"></div>
+</th:block>
+
+<th:block th:fragment="dateField(name, label, required)">
+  <th:block th:replace="~{fragments/form :: fieldLabel(${name}, ${label}, ${required})}"></th:block>
+  <input type="date" th:id="${name}" th:name="${name}" th:value="*{#temporals.format(__${name}__, 'yyyy-MM-dd')}" class="form-control"
+         th:classappend="${#fields.hasErrors(name)} ? 'is-invalid'">
+  <div class="invalid-feedback" th:errors="*{__${name}__}"></div>
+</th:block>
+
+<th:block th:fragment="enumField(name, label, required, items)">
+  <th:block th:replace="~{fragments/form :: fieldLabel(${name}, ${label}, ${required})}"></th:block>
+  <select th:field="*{__${name}__}" class="form-select" th:classappend="${#fields.hasErrors(name)} ? 'is-invalid'">
+    <option th:each="e : ${items}" th:value="${e}" th:text="${e.label}"></option>
+  </select>
+  <div class="invalid-feedback" th:errors="*{__${name}__}"></div>
+</th:block>
+
+<th:block th:fragment="entityField(name, label, required, items, valueProperty, labelProperty, emptyLabel)">
+  <th:block th:replace="~{fragments/form :: fieldLabel(${name}, ${label}, ${required})}"></th:block>
+  <select th:field="*{__${name}__}" class="form-select" th:classappend="${#fields.hasErrors(name)} ? 'is-invalid'">
+    <option value="" th:text="${emptyLabel}"></option>
+    <option th:each="item : ${items}" th:value="${item[valueProperty]}" th:text="${item[labelProperty]}"></option>
+  </select>
+  <div class="invalid-feedback" th:errors="*{__${name}__}"></div>
+</th:block>
+
+</body>
+</html>

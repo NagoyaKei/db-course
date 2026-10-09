@@ -2,6 +2,7 @@ package pro.gorbunov.db_course.repository;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,19 +14,7 @@ public class AgeRecordRepository {
 
     private final JdbcTemplate jdbc;
 
-    private final RowMapper<AgeRecord> rowMapper = (rs, rowNum) -> new AgeRecord(
-            rs.getString("age_category_type"),
-            rs.getString("age_category_name"),
-            rs.getString("gender"),
-            rs.getString("hill_type"),
-            rs.getString("hill_name"),
-            rs.getLong("athlete_id"),
-            rs.getString("athlete_name"),
-            rs.getBigDecimal("distance"),
-            rs.getDate("jump_date").toLocalDate(),
-            rs.getString("competition_name"),
-            rs.getString("record_type")
-    );
+    private final RowMapper<AgeRecord> rowMapper = new DataClassRowMapper<>(AgeRecord.class);
 
     public List<AgeRecord> findByHill(String hillType) {
         return jdbc.query(

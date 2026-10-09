@@ -7,10 +7,12 @@
 <div layout:fragment="content">
   <div class="error-page">
     <i class="bi bi-exclamation-triangle"></i>
-    <h1 class="h3 mt-3">Что-то пошло не так</h1>
-    <p class="text-secondary"
-       th:text="${message != null and !#strings.isEmpty(message)} ? ${message} : 'Страница не найдена или произошла ошибка'"></p>
-    <p th:if="${status instanceof T(java.lang.Integer)}"><code th:text="${status}"></code></p>
+    <h1 class="h3 mt-3" th:switch="${status}">
+      <span th:case="404">Страница или запись не найдена</span>
+      <span th:case="400">Некорректный запрос</span>
+      <span th:case="*">Что-то пошло не так</span>
+    </h1>
+    <p th:if="${status}"><code th:text="${status}"></code></p>
     <a th:href="@{/}" class="btn btn-primary"><i class="bi bi-house me-1"></i> На главную</a>
   </div>
 </div>

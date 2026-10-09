@@ -17,8 +17,8 @@
     <div class="card-body p-4">
       <div class="profile-title">
         <h1 class="h2" th:text="${competition.name}"></h1>
-        <span th:replace="~{fragments/ui :: competitionLevel(${competition.level})}"></span>
-        <span th:replace="~{fragments/ui :: competitionStatus(${competition.status})}"></span>
+        <span th:replace="~{fragments/ui :: badge(${competition.level})}"></span>
+        <span th:replace="~{fragments/ui :: badge(${competition.status})}"></span>
       </div>
 
       <div class="facts mb-4">

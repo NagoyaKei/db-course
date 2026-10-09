@@ -20,7 +20,7 @@
         <div>
           <div class="profile-title">
             <h1 class="h2" th:text="${athlete.fullName}"></h1>
-            <span th:replace="~{fragments/ui :: athleteStatus(${athlete.currentStatus})}"></span>
+            <span th:replace="~{fragments/ui :: badge(${athlete.currentStatus})}"></span>
             <span th:replace="~{fragments/ui :: rank(${athlete.rankName})}"></span>
           </div>
 
@@ -35,7 +35,7 @@
             </div>
             <div>
               <div class="fact-label">Пол</div>
-              <div class="fact-value" th:text="${athlete.gender == 'M'} ? 'Мужской' : 'Женский'"></div>
+              <div class="fact-value" th:text="${athlete.gender?.label}"></div>
             </div>
             <div>
               <div class="fact-label">Год начала занятий</div>
@@ -59,11 +59,6 @@
             <a th:href="@{/athletes/{id}/edit(id=${athlete.personId})}" class="btn btn-outline-secondary">
               <i class="bi bi-pencil me-1"></i> Редактировать
             </a>
-            <form th:action="@{/athletes/{id}/deactivate(id=${athlete.personId})}" method="post">
-              <button type="submit" class="btn btn-outline-danger" data-confirm="Деактивировать спортсмена?">
-                <i class="bi bi-person-x me-1"></i> Деактивировать
-              </button>
-            </form>
           </div>
         </div>
       </div>

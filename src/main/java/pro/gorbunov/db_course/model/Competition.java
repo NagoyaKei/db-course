@@ -1,18 +1,20 @@
 package pro.gorbunov.db_course.model;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.relational.core.mapping.Column;
 
 @Data
-@NoArgsConstructor
 public class Competition {
 
+    @Id
     private Long id;
 
     @NotBlank
@@ -20,6 +22,7 @@ public class Competition {
     private String name;
 
     @NotNull
+    @Column("date")
     private LocalDate competitionDate;
 
     @Size(max = 200)
@@ -27,19 +30,22 @@ public class Competition {
 
     private Long hillId;
 
+    @ReadOnlyProperty
     private String hillName;
 
-    @NotBlank
-    @Pattern(regexp = "^(LOCAL|REGIONAL|NATIONAL|INTERNATIONAL)$")
-    private String level;
+    @NotNull
+    private CompetitionLevel level = CompetitionLevel.LOCAL;
 
-    @NotBlank
-    @Pattern(regexp = "^(PLANNED|ACTIVE|FINISHED|CANCELLED)$")
-    private String status;
+    @NotNull
+    private CompetitionStatus status = CompetitionStatus.PLANNED;
 
     @Min(1)
     private Integer maxParticipants;
 
-    // Вычисляемое поле - количество участников (из JOIN)
+    @ReadOnlyProperty
     private Integer participantsCount;
+
+    public String getTitle() {
+        return name + " (" + competitionDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ")";
+    }
 }

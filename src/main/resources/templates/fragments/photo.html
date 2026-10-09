@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<div th:fragment="input(person)">
+<div th:fragment="upload(person)">
   <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mb-3">
     <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
   </div>

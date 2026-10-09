@@ -78,7 +78,7 @@
           </td>
           <td><code th:text="${a.athleteNumber}"></code></td>
           <td><span th:replace="~{fragments/ui :: rank(${a.rankName})}"></span></td>
-          <td><span th:replace="~{fragments/ui :: athleteStatus(${a.currentStatus})}"></span></td>
+          <td><span th:replace="~{fragments/ui :: badge(${a.currentStatus})}"></span></td>
         </tr>
         <th:block th:if="${#lists.isEmpty(athletes)}"><tr th:replace="~{fragments/ui :: emptyRow(4, 'bi-people', 'У тренера нет спортсменов')}"></tr></th:block>
         </tbody>

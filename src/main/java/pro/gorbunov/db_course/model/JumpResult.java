@@ -1,17 +1,20 @@
 package pro.gorbunov.db_course.model;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.relational.core.mapping.Column;
 
 @Data
-@NoArgsConstructor
 public class JumpResult {
+    @Id
+    @Column("id")
     private Long jumpId;
 
     @NotNull
@@ -31,17 +34,22 @@ public class JumpResult {
     @DecimalMin("-5.0") @DecimalMax("5.0")
     private BigDecimal windFactor; // поправка на ветер
 
-    private LocalDateTime jumpTimestamp;
+    @Column("timestamp")
+    private LocalDateTime jumpTimestamp = LocalDateTime.now();
 
     @Min(1)
     private Integer attemptNumber;
 
     private String gateMark;
 
-    /* additional fields for view */
+    @ReadOnlyProperty
     private String athleteFullName;
+    @ReadOnlyProperty
     private String competitionName;
+    @ReadOnlyProperty
     private String hillType;
+    @ReadOnlyProperty
     private String ageCategoryName;
+    @ReadOnlyProperty
     private BigDecimal points;
 }

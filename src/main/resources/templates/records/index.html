@@ -47,12 +47,12 @@
           <tbody>
           <tr th:each="r : ${records}">
             <td th:text="${r.ageCategoryName()}"></td>
-            <td th:text="${r.gender() == 'M'} ? 'Мужчины' : 'Женщины'"></td>
+            <td th:text="${r.gender().groupLabel}"></td>
             <td><a th:href="@{/athletes/{id}(id=${r.athleteId()})}" th:text="${r.athleteName()}" class="fw-semibold"></a></td>
             <td class="num num-strong" th:text="${r.distance()}"></td>
             <td class="text-nowrap" th:text="${#temporals.format(r.jumpDate(), 'dd.MM.yyyy')}"></td>
             <td th:text="${r.competitionName()}"></td>
-            <td><span th:replace="~{fragments/ui :: recordType(${r.recordType()})}"></span></td>
+            <td><span th:replace="~{fragments/ui :: badge(${r.recordType()})}"></span></td>
           </tr>
           <th:block th:if="${#lists.isEmpty(records)}"><tr th:replace="~{fragments/ui :: emptyRow(7, 'bi-bar-chart-line', 'Прыжков на этом трамплине пока нет')}"></tr></th:block>
           </tbody>

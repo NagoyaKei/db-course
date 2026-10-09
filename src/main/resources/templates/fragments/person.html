@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<body>
+
+<th:block th:fragment="fields">
+  <div class="col-md-4" th:insert="~{fragments/form :: textField('lastName', 'Фамилия', true, 'text', null, null)}"></div>
+  <div class="col-md-4" th:insert="~{fragments/form :: textField('firstName', 'Имя', true, 'text', null, null)}"></div>
+  <div class="col-md-4" th:insert="~{fragments/form :: textField('middleName', 'Отчество', false, 'text', null, null)}"></div>
+  <div class="col-md-6" th:insert="~{fragments/form :: dateField('birthDate', 'Дата рождения', true)}"></div>
+  <div class="col-md-6" th:insert="~{fragments/form :: enumField('gender', 'Пол', true, ${enums.gender})}"></div>
+  <div class="col-12" th:insert="~{fragments/form :: textField('contactInfo', 'Контакт', false, 'text', 'Почта или телефон', null)}"></div>
+</th:block>
+
+</body>
+</html>

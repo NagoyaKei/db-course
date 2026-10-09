@@ -1,6 +1,7 @@
 package pro.gorbunov.db_course.controller;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +17,13 @@ import pro.gorbunov.db_course.service.PhotoThumbnailService;
 
 @Controller
 @RequestMapping("/persons")
+@RequiredArgsConstructor
 public class PersonPhotoController {
 
     private static final String THUMBNAIL_ETAG_SUFFIX = "-thumbnail";
 
     private final PersonImageRepository personImageRepository;
     private final PhotoThumbnailService photoThumbnailService;
-
-    public PersonPhotoController(PersonImageRepository personImageRepository, PhotoThumbnailService photoThumbnailService) {
-        this.personImageRepository = personImageRepository;
-        this.photoThumbnailService = photoThumbnailService;
-    }
 
     @GetMapping("/{id}/photo")
     public ResponseEntity<byte[]> photo(@PathVariable Long id, WebRequest request) {
