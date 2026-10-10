@@ -36,18 +36,27 @@
               <div class="fact-value" th:text="${#temporals.format(coach.birthDate, 'dd.MM.yyyy')}"></div>
             </div>
             <div>
+              <div class="fact-label">Возраст</div>
+              <div class="fact-value" th:text="${coach.ageLabel}"></div>
+            </div>
+            <div>
               <div class="fact-label">Спортсменов</div>
               <div class="fact-value" th:text="${#lists.size(athletes)}"></div>
             </div>
             <div th:if="${coach.contactInfo}">
-              <div class="fact-label">Контакт</div>
-              <div class="fact-value" th:text="${coach.contactInfo}"></div>
+              <div class="fact-label">Электронная почта</div>
+              <div class="fact-value text-nowrap" th:text="${coach.contactInfo}"></div>
             </div>
           </div>
 
-          <a th:href="@{/coaches/{id}/edit(id=${coach.personId})}" class="btn btn-outline-secondary">
-            <i class="bi bi-pencil me-1"></i> Редактировать
-          </a>
+          <div class="d-flex flex-wrap gap-2">
+            <a th:href="@{/coaches/{id}/edit(id=${coach.personId})}" class="btn btn-outline-secondary">
+              <i class="bi bi-pencil me-1"></i> Редактировать
+            </a>
+            <a th:if="${coach.athleteId != null}" th:href="@{/athletes/{id}(id=${coach.athleteId})}" class="btn btn-outline-primary">
+              <i class="bi bi-person-arms-up me-1"></i> Страница спортсмена
+            </a>
+          </div>
         </div>
       </div>
     </div>

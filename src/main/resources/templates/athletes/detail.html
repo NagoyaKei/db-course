@@ -34,6 +34,10 @@
               <div class="fact-value" th:text="${#temporals.format(athlete.birthDate, 'dd.MM.yyyy')}"></div>
             </div>
             <div>
+              <div class="fact-label">Возраст</div>
+              <div class="fact-value" th:text="${athlete.ageLabel}"></div>
+            </div>
+            <div>
               <div class="fact-label">Пол</div>
               <div class="fact-value" th:text="${athlete.gender?.label}"></div>
             </div>
@@ -50,8 +54,8 @@
               </div>
             </div>
             <div th:if="${athlete.contactInfo}">
-              <div class="fact-label">Контакт</div>
-              <div class="fact-value" th:text="${athlete.contactInfo}"></div>
+              <div class="fact-label">Электронная почта</div>
+              <div class="fact-value text-nowrap" th:text="${athlete.contactInfo}"></div>
             </div>
           </div>
 

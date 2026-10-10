@@ -1,6 +1,7 @@
 package pro.gorbunov.db_course.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -33,6 +34,26 @@ public class Person {
     private String contactInfo;
 
     private boolean hasPhoto;
+
+    public String getAgeLabel() {
+        if (birthDate == null) {
+            return "";
+        }
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        return age + " " + yearsWord(age);
+    }
+
+    private static String yearsWord(int age) {
+        int lastTwo = age % 100;
+        int last = age % 10;
+        if (lastTwo >= 11 && lastTwo <= 14) {
+            return "лет";
+        }
+        if (last == 1) {
+            return "год";
+        }
+        return last >= 2 && last <= 4 ? "года" : "лет";
+    }
 
     public String getFullName() {
         return lastName + " " + firstName + (middleName != null && !middleName.isBlank() ? " " + middleName : "");

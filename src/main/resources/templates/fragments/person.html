@@ -8,7 +8,7 @@
   <div class="col-md-4" th:insert="~{fragments/form :: textField('middleName', 'Отчество', false, 'text', null, null)}"></div>
   <div class="col-md-6" th:insert="~{fragments/form :: dateField('birthDate', 'Дата рождения', true)}"></div>
   <div class="col-md-6" th:insert="~{fragments/form :: enumField('gender', 'Пол', true, ${enums.gender})}"></div>
-  <div class="col-12" th:insert="~{fragments/form :: textField('contactInfo', 'Контакт', false, 'text', 'Почта или телефон', null)}"></div>
+  <div class="col-12" th:insert="~{fragments/form :: textField('contactInfo', 'Электронная почта', false, 'text', 'name@example.com', null)}"></div>
 </th:block>
 
 </body>

@@ -30,19 +30,19 @@ services:
 #      - postgres
 #    restart: unless-stopped
 
-#  app:
-#    build: .
-#    container_name: spring_app
-#    ports:
-#      - 8080:8080
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/gorbunov_db
-#      - SPRING_DATASOURCE_USERNAME=gorbunov
-#      - SPRING_DATASOURCE_PASSWORD=gorbunov
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    restart: unless-stopped
+  app:
+    build: .
+    container_name: spring_app
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/gorbunov_db
+      - SPRING_DATASOURCE_USERNAME=gorbunov
+      - SPRING_DATASOURCE_PASSWORD=gorbunov
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:

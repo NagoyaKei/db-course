@@ -32,6 +32,7 @@
         <tr>
           <th>Тренер</th>
           <th>Лицензия</th>
+          <th>Разряд</th>
           <th class="text-end">Стаж, лет</th>
           <th></th>
         </tr>
@@ -45,6 +46,7 @@
             </div>
           </td>
           <td><code th:text="${c.licenseNumber}"></code></td>
+          <td><span th:replace="~{fragments/ui :: rank(${c.rankName})}"></span></td>
           <td class="num" th:text="${c.experienceYears}"></td>
           <td>
             <div class="row-actions">
@@ -55,9 +57,9 @@
             </div>
           </td>
         </tr>
-        <th:block th:if="${#lists.isEmpty(coaches)}"><tr th:replace="~{fragments/ui :: emptyRow(4, 'bi-person-badge', 'Тренеры не найдены')}"></tr></th:block>
+        <th:block th:if="${#lists.isEmpty(coaches)}"><tr th:replace="~{fragments/ui :: emptyRow(5, 'bi-person-badge', 'Тренеры не найдены')}"></tr></th:block>
         <tr th:unless="${#lists.isEmpty(coaches)}" data-filter-empty hidden>
-          <td colspan="4"><div class="empty-state"><i class="bi bi-search"></i><div>Ничего не найдено</div></div></td>
+          <td colspan="5"><div class="empty-state"><i class="bi bi-search"></i><div>Ничего не найдено</div></div></td>
         </tr>
         </tbody>
       </table>

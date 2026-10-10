@@ -17,4 +17,7 @@ public class Coach extends Person {
     @NotNull
     @Min(0) @Max(80)
     private Integer experienceYears = 0;
+
+    private Long athleteId;
+    private String rankName;
 }

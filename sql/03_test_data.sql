@@ -47,7 +47,7 @@ INSERT INTO record (jump_id, type, verification_date) VALUES
     (5, 'CLUB',     '2024-03-16'),
     (7, 'REGIONAL', '2025-01-21');
 
--- more coaches and athletes, the key to join them with person is contact_info
+-- more coaches and athletes (every coach is also an athlete), the key to join them with person is contact_info
 INSERT INTO person (first_name, last_name, middle_name, birth_date, gender, contact_info) VALUES
     ('Андрей',  'Кузнецов', 'Олегович',   '1982-05-20', 'M', 'kuznetsov@club.ru'),
     ('Елена',   'Орлова',   'Викторовна', '1988-11-03', 'F', 'orlova@club.ru'),
@@ -84,7 +84,11 @@ FROM (VALUES
     ('kozlov@mail.ru',   'sokolova@club.ru',    'ATH-2012-013', 2012, 'ACTIVE'),
     ('novikova@mail.ru', 'orlova@club.ru',      'ATH-2013-014', 2013, 'ACTIVE'),
     ('pavlov@mail.ru',   'belousov-vp@club.ru', 'ATH-2010-015', 2010, 'INACTIVE'),
-    ('vasilev@mail.ru',  'belousov-vp@club.ru', 'ATH-2014-016', 2014, 'SUSPENDED')
+    ('vasilev@mail.ru',  'belousov-vp@club.ru', 'ATH-2014-016', 2014, 'SUSPENDED'),
+    ('petrov@club.ru',   'belousov-vp@club.ru', 'ATH-1991-017', 1991, 'INACTIVE'),
+    ('sokolova@club.ru', 'belousov-vp@club.ru', 'ATH-1996-018', 1996, 'INACTIVE'),
+    ('kuznetsov@club.ru', 'petrov@club.ru',     'ATH-1998-019', 1998, 'ACTIVE'),
+    ('orlova@club.ru',   'sokolova@club.ru',    'ATH-2004-020', 2004, 'ACTIVE')
 ) AS v(athlete_email, coach_email, number, start_year, status)
 JOIN person p ON p.contact_info = v.athlete_email
 JOIN person cp ON cp.contact_info = v.coach_email
@@ -123,6 +127,10 @@ FROM (VALUES
     ('ATH-2013-014', 0.72, 0.020, 0.035, DATE '2023-02-01', DATE '2026-12-31', NULL,              NULL,              DATE '2024-01-01', DATE '2023-03-01', 170.0, 0.0, 60.0, 0.0, 52.0,  0.0, 58),
     ('ATH-2010-015', 0.82, -0.020, 0.040, DATE '2023-02-01', DATE '2025-03-31', NULL,             NULL,              NULL,              DATE '2023-03-01', 178.0, 0.0, 82.0, 1.0, 50.0, -0.8, 60),
     ('ATH-2014-016', 0.76, 0.020, 0.040, DATE '2023-02-01', DATE '2025-12-31', NULL,              NULL,              DATE '2025-01-01', DATE '2023-03-01', 179.0, 0.0, 75.0, 0.0, 54.0,  0.0, 57),
+    ('ATH-1991-017', 0.88, -0.020, 0.035, DATE '2023-02-01', DATE '2023-12-31', NULL,              NULL,              NULL,              DATE '2023-01-20', 178.0, 0.0, 80.0, 0.5, 46.0, -0.6, 62),
+    ('ATH-1996-018', 0.78, -0.015, 0.035, DATE '2023-02-01', DATE '2024-12-31', NULL,              NULL,              NULL,              DATE '2023-01-20', 168.0, 0.0, 60.0, 0.5, 42.0, -0.5, 64),
+    ('ATH-1998-019', 0.85, -0.010, 0.035, DATE '2023-02-01', DATE '2026-12-31', NULL,              NULL,              DATE '2025-01-01', DATE '2023-03-01', 180.0, 0.0, 79.0, 0.3, 48.0, -0.4, 60),
+    ('ATH-2004-020', 0.80,  0.010, 0.035, DATE '2023-02-01', DATE '2026-12-31', NULL,              NULL,              DATE '2025-06-01', DATE '2023-03-01', 169.0, 0.0, 58.0, 0.0, 46.0, -0.2, 62),
     ('ATH-1960-005', 1.15, -0.010, 0.030, DATE '2023-02-01', DATE '2025-03-31', NULL,              NULL,              NULL,              DATE '2023-01-15', 176.0, 0.0, 80.0, 0.5, 38.0, -0.5, 66)
 ) AS v(number, base_ratio, gain_per_year, noise, first_date, last_date, pause_from, pause_to, k120_from,
        measure_from, height0, height_gain, weight0, weight_gain, vo2_0, vo2_gain, hr0)

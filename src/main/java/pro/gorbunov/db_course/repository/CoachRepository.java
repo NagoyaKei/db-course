@@ -26,9 +26,12 @@ public class CoachRepository {
                 p.id AS person_id, p.last_name, p.first_name, p.middle_name,
                 p.birth_date, p.gender, p.contact_info,
                 EXISTS (SELECT 1 FROM person_image pi WHERE pi.person_id = p.id) AS has_photo,
-                c.license_number, c.experience_years
+                c.license_number, c.experience_years,
+                a.id AS athlete_id, cr.rank_name
             FROM coach c
             JOIN person p ON p.id = c.id
+            LEFT JOIN athlete a ON a.id = c.id
+            LEFT JOIN v_athlete_current_rank cr ON cr.athlete_id = c.id
             """;
 
     public List<Coach> findAll() {
