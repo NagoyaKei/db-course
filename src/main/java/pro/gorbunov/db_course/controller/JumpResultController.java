@@ -3,6 +3,7 @@ package pro.gorbunov.db_course.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import pro.gorbunov.db_course.model.JumpResult;
 import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CompetitionRepository;
 import pro.gorbunov.db_course.repository.JumpResultRepository;
+import pro.gorbunov.db_course.service.DbErrorMessages;
 
 @Controller
 @RequestMapping("/jumps")
@@ -44,14 +46,26 @@ public class JumpResultController {
                          BindingResult errors,
                          Model model,
                          RedirectAttributes redirect) {
+        if (!errors.hasErrors() && !trySave(jump, model)) {
+            errors.reject("save");
+        }
         if (errors.hasErrors()) {
             model.addAttribute("athletes", athleteRepository.findAll());
             model.addAttribute("competitions", competitionRepository.findAll());
             return "jumps/form";
         }
-        jumpResultRepository.save(jump);
         redirect.addFlashAttribute("success", "Результат прыжка зарегистрирован");
         return "redirect:/jumps";
+    }
+
+    private boolean trySave(JumpResult jump, Model model) {
+        try {
+            jumpResultRepository.save(jump);
+            return true;
+        } catch (DbActionExecutionException e) {
+            model.addAttribute("error", "Результат не сохранен: " + DbErrorMessages.firstLine(e));
+            return false;
+        }
     }
 
     @PostMapping("/{id}/delete")

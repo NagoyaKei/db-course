@@ -7,6 +7,7 @@ import pro.gorbunov.db_course.model.AthleteStatus;
 import pro.gorbunov.db_course.model.CompetitionLevel;
 import pro.gorbunov.db_course.model.CompetitionStatus;
 import pro.gorbunov.db_course.model.Gender;
+import pro.gorbunov.db_course.model.RecordType;
 
 @ControllerAdvice
 public class EnumsAdvice {
@@ -17,7 +18,8 @@ public class EnumsAdvice {
                 "gender", Gender.values(),
                 "athleteStatus", AthleteStatus.values(),
                 "competitionLevel", CompetitionLevel.values(),
-                "competitionStatus", CompetitionStatus.values()
+                "competitionStatus", CompetitionStatus.values(),
+                "recordType", RecordType.values()
         );
     }
 }

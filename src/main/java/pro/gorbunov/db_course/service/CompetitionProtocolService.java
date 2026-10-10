@@ -47,13 +47,9 @@ public class CompetitionProtocolService {
         try {
             protocolRepository.register(competitionId, toJson(entries));
         } catch (DataAccessException e) {
-            throw new ResultsRejectedException("Результаты не сохранены: " + firstLine(e.getMostSpecificCause().getMessage()));
+            throw new ResultsRejectedException("Результаты не сохранены: " + DbErrorMessages.firstLine(e));
         }
         return entries.size();
-    }
-
-    private String firstLine(String message) {
-        return message.lines().findFirst().orElse(message).replaceFirst("^ERROR: ", "");
     }
 
     private void rejectIncomplete(List<ResultEntry> entries) {

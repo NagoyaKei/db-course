@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Замер</title></head>
+<body>
+<div layout:fragment="content">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/athletes}">Спортсмены</a></li>
+      <li class="breadcrumb-item"><a th:href="@{/athletes/{id}(id=${athlete.personId})}" th:text="${athlete.fullName}"></a></li>
+      <li class="breadcrumb-item active" aria-current="page" th:text="${measure.recordId == null} ? 'Новый замер' : 'Редактирование замера'"></li>
+    </ol>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="h3" th:text="${measure.recordId == null} ? 'Новый замер' : 'Редактирование замера'"></h1>
+    <p class="text-secondary mb-0">Поля, отмеченные <span class="required">*</span>, обязательны</p>
+  </div>
+
+  <form th:action="${measure.recordId == null} ? @{/athletes/{a}/measures(a=${athlete.personId})} : @{/athletes/{a}/measures/{id}/edit(a=${athlete.personId}, id=${measure.recordId})}"
+        th:object="${measure}" method="post" class="form-card">
+
+    <div class="card">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4" th:insert="~{fragments/form :: dateField('measureDate', 'Дата замера', true)}"></div>
+          <div class="col-md-4" th:insert="~{fragments/form :: textField('height', 'Рост, см', true, 'number', null, '0.1')}"></div>
+          <div class="col-md-4" th:insert="~{fragments/form :: textField('weight', 'Вес, кг', true, 'number', null, '0.1')}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: textField('vo2Max', 'VO2 max', false, 'number', null, '0.1')}"></div>
+          <div class="col-md-6" th:insert="~{fragments/form :: textField('restingHr', 'Пульс покоя', false, 'number', null, '0.1')}"></div>
+          <div class="col-12" th:insert="~{fragments/form :: textField('notes', 'Заметки', false, 'text', null, null)}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Сохранить</button>
+      <a th:href="@{/athletes/{id}(id=${athlete.personId})}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+
+</div>
+</body>
+</html>

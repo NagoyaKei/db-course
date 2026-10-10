@@ -85,8 +85,47 @@
 
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Выполненные нормативы</span>
+      <span class="badge-soft is-secondary" th:text="${#lists.size(norms)}"></span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Разряд</th>
+          <th>Трамплин</th>
+          <th class="text-end">Дистанция, м</th>
+          <th>Замер</th>
+          <th class="text-end">Рост, см</th>
+          <th class="text-end">Вес, кг</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="n : ${norms}">
+          <td class="text-nowrap" th:text="${#temporals.format(n.jumpDate, 'dd.MM.yyyy')}"></td>
+          <td><span th:replace="~{fragments/ui :: rank(${n.rankName})}"></span></td>
+          <td><code th:text="${n.hillType}"></code></td>
+          <td class="num num-strong" th:text="${n.distance}"></td>
+          <td class="text-nowrap" th:text="${n.measureDate != null} ? ${#temporals.format(n.measureDate, 'dd.MM.yyyy')} : '-'"></td>
+          <td class="num" th:text="${n.height}"></td>
+          <td class="num" th:text="${n.weight}"></td>
+        </tr>
+        <th:block th:if="${#lists.isEmpty(norms)}"><tr th:replace="~{fragments/ui :: emptyRow(7, 'bi-award', 'Нормативы пока не выполнены')}"></tr></th:block>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
       <span>Физиологические замеры</span>
-      <span class="badge-soft is-secondary" th:text="${#lists.size(measures)}"></span>
+      <span class="d-flex align-items-center gap-2">
+        <span class="badge-soft is-secondary" th:text="${#lists.size(measures)}"></span>
+        <a th:href="@{/athletes/{id}/measures/new(id=${athlete.personId})}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg me-1"></i> Добавить замер
+        </a>
+      </span>
     </div>
     <div class="table-responsive">
       <table class="table table-hover align-middle">
@@ -97,6 +136,7 @@
           <th class="text-end">Вес, кг</th>
           <th class="text-end">VO2 max</th>
           <th class="text-end">Пульс покоя</th>
+          <th></th>
         </tr>
         </thead>
         <tbody>
@@ -106,8 +146,22 @@
           <td class="num" th:text="${m.weight}"></td>
           <td class="num" th:text="${m.vo2Max}"></td>
           <td class="num" th:text="${m.restingHr}"></td>
+          <td>
+            <div class="row-actions">
+              <a th:href="@{/athletes/{a}/measures/{id}/edit(a=${athlete.personId}, id=${m.recordId})}" class="btn btn-sm btn-outline-secondary icon-btn"
+                 data-bs-toggle="tooltip" data-bs-title="Редактировать" aria-label="Редактировать">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form th:action="@{/athletes/{a}/measures/{id}/delete(a=${athlete.personId}, id=${m.recordId})}" method="post">
+                <button type="submit" class="btn btn-sm btn-outline-danger icon-btn" data-confirm="Удалить замер?"
+                        data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
         </tr>
-        <th:block th:if="${#lists.isEmpty(measures)}"><tr th:replace="~{fragments/ui :: emptyRow(5, 'bi-heart-pulse', 'Замеров пока нет')}"></tr></th:block>
+        <th:block th:if="${#lists.isEmpty(measures)}"><tr th:replace="~{fragments/ui :: emptyRow(6, 'bi-heart-pulse', 'Замеров пока нет')}"></tr></th:block>
         </tbody>
       </table>
     </div>

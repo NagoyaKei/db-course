@@ -167,6 +167,8 @@ class RepositoriesTest {
         assertEquals(RecordType.REGIONAL, found.getRecordType());
         assertNotNull(found.getVerificationDate());
         assertTrue(recordRepository.findByRecordType(RecordType.REGIONAL).stream().anyMatch(candidate -> candidate.getRecordId().equals(id)));
+        assertEquals(id, recordRepository.findByJumpId(jumpId).orElseThrow().getRecordId());
+        assertEquals(RecordType.REGIONAL, jumpResultRepository.findById(jumpId).orElseThrow().getRecordType());
     }
 
     @Test

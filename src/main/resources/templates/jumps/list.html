@@ -38,6 +38,7 @@
           <th class="text-end">Дистанция, м</th>
           <th class="text-end">Очки</th>
           <th class="text-end">Попытка</th>
+          <th>Рекорд</th>
           <th></th>
         </tr>
         </thead>
@@ -51,8 +52,13 @@
           <td class="num num-strong" th:text="${j.distance}"></td>
           <td class="num" th:text="${j.points}"></td>
           <td class="num" th:text="${j.attemptNumber}"></td>
+          <td><span th:replace="~{fragments/ui :: badge(${j.recordType})}"></span></td>
           <td>
             <div class="row-actions">
+              <a th:href="@{/jumps/{id}/record(id=${j.jumpId})}" class="btn btn-sm btn-outline-secondary icon-btn"
+                 data-bs-toggle="tooltip" data-bs-title="Рекорд" aria-label="Рекорд">
+                <i class="bi bi-trophy"></i>
+              </a>
               <form th:action="@{/jumps/{id}/delete(id=${j.jumpId})}" method="post">
                 <button type="submit" class="btn btn-sm btn-outline-danger icon-btn" data-confirm="Удалить результат?"
                         data-bs-toggle="tooltip" data-bs-title="Удалить" aria-label="Удалить">
@@ -62,9 +68,9 @@
             </div>
           </td>
         </tr>
-        <th:block th:if="${#lists.isEmpty(jumps)}"><tr th:replace="~{fragments/ui :: emptyRow(9, 'bi-graph-up', 'Результаты не найдены')}"></tr></th:block>
+        <th:block th:if="${#lists.isEmpty(jumps)}"><tr th:replace="~{fragments/ui :: emptyRow(10, 'bi-graph-up', 'Результаты не найдены')}"></tr></th:block>
         <tr th:unless="${#lists.isEmpty(jumps)}" data-filter-empty hidden>
-          <td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><div>Ничего не найдено</div></div></td>
+          <td colspan="10"><div class="empty-state"><i class="bi bi-search"></i><div>Ничего не найдено</div></div></td>
         </tr>
         </tbody>
       </table>

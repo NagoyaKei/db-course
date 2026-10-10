@@ -20,6 +20,7 @@ import pro.gorbunov.db_course.model.Athlete;
 import pro.gorbunov.db_course.model.AthleteStatus;
 import pro.gorbunov.db_course.model.Forecast;
 import pro.gorbunov.db_course.model.StoredImage;
+import pro.gorbunov.db_course.repository.AthleteProgressRepository;
 import pro.gorbunov.db_course.repository.AthleteRepository;
 import pro.gorbunov.db_course.repository.CoachRepository;
 import pro.gorbunov.db_course.repository.JumpResultRepository;
@@ -40,6 +41,7 @@ public class AthleteController {
     private final JumpResultRepository jumpResultRepository;
     private final PhysiologicalRecordRepository physiologicalRecordRepository;
     private final AthleteProgressService progressService;
+    private final AthleteProgressRepository progressRepository;
     private final ObjectMapper objectMapper;
     private final ImageUploadReader imageUploadReader;
     private final PersonPhotoService personPhotoService;
@@ -58,6 +60,7 @@ public class AthleteController {
         model.addAttribute("athlete", athlete);
         model.addAttribute("jumps", jumpResultRepository.findByAthlete(id));
         model.addAttribute("measures", physiologicalRecordRepository.findByAthleteIdOrderByMeasureDateDesc(id));
+        model.addAttribute("norms", progressRepository.findNormFulfilment(id));
         addProgress(id, model);
         return "athletes/detail";
     }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import pro.gorbunov.db_course.model.Forecast;
 import pro.gorbunov.db_course.model.JumpDynamics;
+import pro.gorbunov.db_course.model.NormFulfilment;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,6 +25,18 @@ public class AthleteProgressRepository {
                 ORDER BY jump_date, jump_id
                 """,
                 new DataClassRowMapper<>(JumpDynamics.class), athleteId, athleteId
+        );
+    }
+
+    public List<NormFulfilment> findNormFulfilment(Long athleteId) {
+        return jdbc.query(
+                """
+                SELECT jump_date, rank_name, hill_type, distance, measure_date, height, weight
+                FROM v_norm_fulfilment
+                WHERE athlete_id = ?
+                ORDER BY jump_date, rank_sort_order
+                """,
+                new DataClassRowMapper<>(NormFulfilment.class), athleteId
         );
     }
 

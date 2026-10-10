@@ -142,6 +142,35 @@ FROM athlete_rank ar
 JOIN sport_rank sr ON sr.id = ar.rank_id
 ORDER BY ar.athlete_id, sr.sort_order DESC, ar.assigned_date;
 
+-- first fulfilment of every norm by an athlete with the body measures taken last on or before that day
+CREATE VIEW v_norm_fulfilment AS
+SELECT DISTINCT ON (jc.athlete_id, sr.id)
+       jc.athlete_id,
+       jc.jump_id,
+       jc.jump_date,
+       sr.id AS rank_id,
+       sr.type AS rank_type,
+       sr.name AS rank_name,
+       sr.sort_order AS rank_sort_order,
+       jc.hill_type,
+       jc.distance,
+       pr.measure_date,
+       pr.height,
+       pr.weight,
+       pr.vo2_max,
+       pr.resting_hr
+FROM standards_map sm
+JOIN v_jump_context jc ON jc.jump_id = sm.jump_id
+JOIN sport_rank sr ON sr.id = sm.rank_id
+LEFT JOIN LATERAL (
+    SELECT p.measure_date, p.height, p.weight, p.vo2_max, p.resting_hr
+    FROM physiological_record p
+    WHERE p.athlete_id = jc.athlete_id AND p.measure_date <= jc.jump_date
+    ORDER BY p.measure_date DESC
+    LIMIT 1
+) pr ON TRUE
+ORDER BY jc.athlete_id, sr.id, jc.jump_date, jc.jump_id;
+
 -- triggers
 CREATE FUNCTION fn_validate_physiological_record() RETURNS TRIGGER
 LANGUAGE plpgsql AS $$
@@ -176,6 +205,31 @@ END $$;
 CREATE TRIGGER trg_validate_athlete_start_year
     BEFORE INSERT OR UPDATE OF start_year ON athlete
     FOR EACH ROW EXECUTE FUNCTION fn_validate_athlete_start_year();
+
+-- a jump belongs to a held competition and to its day, an empty timestamp is filled with the competition date
+CREATE FUNCTION fn_validate_jump_result() RETURNS TRIGGER
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_date   DATE;
+    v_status VARCHAR(20);
+BEGIN
+    SELECT date, status INTO v_date, v_status FROM competition WHERE id = NEW.competition_id;
+    IF v_status NOT IN ('ACTIVE', 'FINISHED') THEN
+        RAISE EXCEPTION 'Jumps can not be registered for competition % in status %', NEW.competition_id, v_status
+            USING ERRCODE = 'check_violation';
+    END IF;
+    IF NEW.timestamp IS NULL THEN
+        NEW.timestamp := v_date + LOCALTIME;
+    ELSIF NEW.timestamp::DATE <> v_date THEN
+        RAISE EXCEPTION 'Jump date % differs from date % of competition %', NEW.timestamp::DATE, v_date, NEW.competition_id
+            USING ERRCODE = 'check_violation';
+    END IF;
+    RETURN NEW;
+END $$;
+
+CREATE TRIGGER trg_jump_result_validate
+    BEFORE INSERT OR UPDATE OF competition_id, timestamp ON jump_result
+    FOR EACH ROW EXECUTE FUNCTION fn_validate_jump_result();
 
 -- procedures
 -- records which norms a jump fulfils and gives the athlete the highest of them if it is above the current rank
@@ -284,7 +338,7 @@ BEGIN
     r_squared := ROUND(COALESCE(v_r2, 0)::NUMERIC, 3);
 END $$;
 
--- registers all results of a competition in one call, so either all jumps are saved or none
+-- registers all results of a competition in one call, so either all jumps are saved or none; the jump time is left to the trigger
 CREATE PROCEDURE p_register_competition_results(p_competition_id BIGINT, p_results JSONB)
 LANGUAGE plpgsql AS $$
 DECLARE
@@ -304,11 +358,11 @@ BEGIN
     INSERT INTO jump_result (athlete_id, competition_id, timestamp, distance, style_points, wind_factor, attempt_number, gate_mark)
     SELECT (r ->> 'athlete_id')::BIGINT,
            p_competition_id,
-           COALESCE((r ->> 'timestamp')::TIMESTAMP, CURRENT_TIMESTAMP),
+           (r ->> 'timestamp')::TIMESTAMP,
            (r ->> 'distance')::NUMERIC,
            (r ->> 'style_points')::NUMERIC,
            (r ->> 'wind_factor')::NUMERIC,
-           (r ->> 'attempt_number')::SMALLINT,
+           COALESCE((r ->> 'attempt_number')::SMALLINT, 1),
            r ->> 'gate_mark'
     FROM JSONB_ARRAY_ELEMENTS(p_results) AS r;
 END $$;

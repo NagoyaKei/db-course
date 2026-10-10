@@ -35,7 +35,7 @@ public class JumpResult {
     private BigDecimal windFactor; // поправка на ветер
 
     @Column("timestamp")
-    private LocalDateTime jumpTimestamp = LocalDateTime.now();
+    private LocalDateTime jumpTimestamp;
 
     @Min(1)
     private Integer attemptNumber;
@@ -52,4 +52,6 @@ public class JumpResult {
     private String ageCategoryName;
     @ReadOnlyProperty
     private BigDecimal points;
+    @ReadOnlyProperty
+    private RecordType recordType;
 }

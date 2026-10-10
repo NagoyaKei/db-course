@@ -1,6 +1,6 @@
 # Таблицы базы данных
 
-Схема: `sql/01_init.sql` + `sql/02_schema_fixes.sql`. Справочники: `sql/03_reference_data.sql`, тестовые данные: `sql/04_test_data.sql` (20 человек, 16 спортсменов, 15 соревнований 2023-2026, около 240 прыжков, 165 замеров; новые данные генерируются SQL без `random()`, повторный запуск дает те же значения), фото людей: `sql/05_person_images.sql` (выгрузка из рабочей БД в base64, при смене фото пересоздавать файл), объекты БД: `sql/06_db_objects.sql`. При изменении схемы обновлять этот файл на месте.
+Схема: `sql/01_init.sql` (единый файл, правки схемы вносятся прямо в него). Справочники: `sql/02_reference_data.sql`, тестовые данные: `sql/03_test_data.sql` (20 человек, 16 спортсменов, 15 соревнований 2023-2026, около 240 прыжков, 165 замеров; новые данные генерируются SQL без `random()`, повторный запуск дает те же значения), фото людей: `sql/04_person_images.sql` (выгрузка из рабочей БД в base64, при смене фото пересоздавать файл), объекты БД: `sql/05_db_objects.sql`. Файлы выполняются по порядку номеров. При изменении схемы обновлять этот файл на месте.
 
 Соглашения:
 - Колонки без префикса имени таблицы: PK везде `id`, а не `rank_id`, `person_id` и т.п. Внешние ключи называются по роли: `athlete_id`, `rank_id`, `hill_id`.
@@ -49,7 +49,8 @@
 
 ### jump_result
 Один прыжок спортсмена на соревновании.
-- `id` PK, `athlete_id` FK athlete (RESTRICT), `competition_id` FK competition (RESTRICT), `timestamp`, `distance`, `style_points`, `wind_factor`, `attempt_number`, `gate_mark`
+- `id` PK, `athlete_id` FK athlete (RESTRICT), `competition_id` FK competition (RESTRICT), `timestamp`, `distance`, `style_points`, `wind_factor`, `attempt_number` (NOT NULL, по умолчанию 1), `gate_mark`
+- `UNIQUE (athlete_id, competition_id, attempt_number)`; прыжок допустим только в соревновании ACTIVE или FINISHED и в день соревнования (триггер `trg_jump_result_validate`, пустой `timestamp` заполняется датой соревнования и текущим временем, значения по умолчанию у `timestamp` нет)
 
 ### record
 Рекордный прыжок (1:1 с jump_result через UNIQUE `jump_id`).
@@ -81,7 +82,7 @@
 - jump_result 1:1 record; jump_result M:N sport_rank через standards_map
 - sport_rank M:N age_category, hill через norm
 
-## Объекты БД (`sql/06_db_objects.sql`)
+## Объекты БД (`sql/05_db_objects.sql`)
 
 Выполняется после данных. В конце файла пересчитываются `standards_map` и `athlete_rank` для существующих прыжков, поэтому в тестовых данных их вставок нет.
 
@@ -93,14 +94,16 @@
 - `v_physio_distance_correlation` - корреляция роста и веса с дистанцией по трамплинам.
 - `v_competition_protocol` - протокол соревнования: число прыжков, лучшая дистанция, сумма очков, место.
 - `v_athlete_current_rank` - высший присвоенный разряд спортсмена.
+- `v_norm_fulfilment` - первое выполнение каждого норматива спортсменом: дата прыжка, дистанция, замер (рост, вес, VO2, пульс) последний на эту дату или раньше.
 
 Процедуры и функции:
 - `p_assign_rank(p_jump_id)` - пересчитывает `standards_map` для прыжка (какие нормативы выполнены) и присваивает спортсмену высший из них, если он выше текущего разряда. Разряд не отзывается при пересчете.
 - `p_calculate_forecast(p_athlete_id, p_horizon_days, OUT forecast_distance, OUT trend_per_year, OUT jumps_used, OUT r_squared)` - линейная регрессия дистанции относительно K-точки по времени, прогноз пересчитывается в метры на последнем трамплине спортсмена. Нужно минимум два прыжка в разные даты, иначе результат пустой.
-- `p_register_competition_results(p_competition_id, p_results JSONB)` - добавляет все прыжки соревнования одним вызовом (все или ни одного); соревнование должно быть в статусе ACTIVE или FINISHED.
+- `p_register_competition_results(p_competition_id, p_results JSONB)` (время прыжка заполняет триггер) - добавляет все прыжки соревнования одним вызовом (все или ни одного); соревнование должно быть в статусе ACTIVE или FINISHED.
 - `fn_age_on(p_birth_date, p_on)` - полных лет на дату.
 
 Триггеры:
 - `trg_validate_physiological_record` - дата замера не раньше даты рождения.
 - `trg_validate_athlete_start_year` - год начала занятий не раньше года рождения.
 - `trg_jump_result_assign_rank` - после вставки или изменения дистанции прыжка вызывает `p_assign_rank`.
+- `trg_jump_result_validate` - статус соревнования ACTIVE или FINISHED, дата прыжка равна дате соревнования, пустое время заполняется.

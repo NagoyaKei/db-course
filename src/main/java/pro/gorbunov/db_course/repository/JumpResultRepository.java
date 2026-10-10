@@ -14,11 +14,12 @@ public interface JumpResultRepository extends Repository<JumpResult, Long> {
                    jr.timestamp, jr.attempt_number,
                    p.last_name || ' ' || p.first_name AS athlete_full_name,
                    c.name AS competition_name,
-                   jc.hill_type, jc.age_category_name, jc.points
+                   jc.hill_type, jc.age_category_name, jc.points, rec.type AS record_type
             FROM jump_result jr
             JOIN person p ON p.id = jr.athlete_id
             JOIN competition c ON c.id = jr.competition_id
             JOIN v_jump_context jc ON jc.jump_id = jr.id
+            LEFT JOIN record rec ON rec.jump_id = jr.id
             """;
 
     @Query(BASE_SELECT + "ORDER BY jr.timestamp DESC")
