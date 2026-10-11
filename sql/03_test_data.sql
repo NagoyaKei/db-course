@@ -7,7 +7,7 @@ INSERT INTO person (first_name, last_name, middle_name, birth_date, gender, cont
     ('Алексей',   'Зимин',     'Павлович',   '2006-04-03', 'M', 'zimin@mail.ru'),
     ('Ольга',     'Снегирева', 'Николаевна', '2007-08-17', 'F', 'snegireva@mail.ru'),
     ('Иван',      'Морозов',   'Денисович',  '2004-01-25', 'M', 'morozov@mail.ru'),
-    ('Владимир',  'Белоусов',  'Павлович',   '1946-07-14', 'M', 'belousov-vp@club.ru');
+    ('Виктор',  'Белоусов',  'Павлович',   '1946-07-14', 'M', 'belousov-vp@club.ru');
 
 INSERT INTO coach (id, license_number, experience_years) VALUES
     (1, 'LIC-2005-001', 20),
