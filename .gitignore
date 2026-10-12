@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### SQL ###
+/sql/04_person_images.sql
